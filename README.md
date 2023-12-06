@@ -1,25 +1,25 @@
-# [Source code for the XGRmod web server](https://github.com/hfang-bristol/XGRmod-site)
+# [Source code for the XGRm web server](https://github.com/hfang-bristol/XGRm-site)
 
 ## @ Overview
 
-> The [XGRmod](http://www.xgrmod.com) web server offers real-time enrichment and subnetwork analyses for a user-input list of `genes`, `SNPs`, or `genomic regions`, through leveraging ontologies, networks, and many others (such as e/pQTL, promoter capture Hi-C, and enhancer-gene maps).
+> The [XGRm](http://www.xgrmod.com) web server offers real-time enrichment and subnetwork analyses for a user-input list of `genes`, `SNPs`, or `genomic regions`, through leveraging ontologies, networks, and many others (such as e/pQTL, promoter capture Hi-C, and enhancer-gene maps).
 
-> The web server provides users with a more integrated and user-friendly experience, featuring: [ENRICHMENT ANALYSER (GENES) - EAG](http://www.xgrmod.com/XGRmod/EAgene) identifying enriched ontology terms from input gene list; [ENRICHMENT ANALYSER (REGIONS) - EAR](http://www.xgrmod.com/XGRmod/EAregion) identifying enriched ontology terms for genes linked from input genomic region list; [SUBNETWORK ANALYSER (GENES) - SAG](http://www.xgrmod.com/XGRmod/SAgene) identifying a gene subnetwork based on input gene-level summary data; and [SUBNETWORK ANALYSER (REGIONS) - SAR](http://www.xgrmod.com/XGRmod/SAregion) identifying a gene subnetwork based on genes linked from input genomic region-level summary data.
+> The web server provides users with a more integrated and user-friendly experience, featuring: [ENRICHMENT ANALYSER (GENES) - EAG](http://www.xgrmod.com/XGRm/EAgene) identifying enriched ontology terms from input gene list; [ENRICHMENT ANALYSER (REGIONS) - EAR](http://www.xgrmod.com/XGRm/EAregion) identifying enriched ontology terms for genes linked from input genomic region list; [SUBNETWORK ANALYSER (GENES) - SAG](http://www.xgrmod.com/XGRm/SAgene) identifying a gene subnetwork based on input gene-level summary data; and [SUBNETWORK ANALYSER (REGIONS) - SAR](http://www.xgrmod.com/XGRm/SAregion) identifying a gene subnetwork based on genes linked from input genomic region-level summary data.
 
-> To learn how to use the XGRmod web server, a user manual has been made available [here](http://www.xgrmod.com/XGRmodbooklet/index.html) with step-by-step instructions.
+> To learn how to use the XGRm web server, a user manual has been made available [here](http://www.xgrmod.com/XGRmodbooklet/index.html) with step-by-step instructions.
 
 ## @ Development
 
-> The XGRmod web server was developed using [Mojolicious](https://www.mojolicious.org) and [Bootstrap](https://getbootstrap.com), supporting a mobile-first and responsive webserver across all major platform browsers.
+> The XGRm web server was developed using [Mojolicious](https://www.mojolicious.org) and [Bootstrap](https://getbootstrap.com), supporting a mobile-first and responsive webserver across all major platform browsers.
 
-> The folder `my_openxgr` has a tree-like directory structure with three levels:
+> The folder `my_xgrm` has a tree-like directory structure with three levels:
 ```ruby
-my_openxgr
+my_xgrm
 ├── lib
-│   └── My_openxgr
+│   └── My_xgrm
 │       └── Controller
 ├── public
-│   ├── XGRmodbooklet
+│   ├── XGRmbooklet
 │   │   ├── index_files
 │   │   └── libs
 │   ├── app
@@ -28,19 +28,20 @@ my_openxgr
 │   │   ├── examples
 │   │   ├── img
 │   │   └── js
-│   └── dep
-│       ├── HighCharts
-│       ├── Select2
-│       ├── bootstrap
-│       ├── bootstrapselect
-│       ├── bootstraptoggle
-│       ├── dataTables
-│       ├── fontawesome
-│       ├── jcloud
-│       ├── jqcloud
-│       ├── jquery
-│       ├── tabber
-│       └── typeahead
+│   ├── dep
+│   │   ├── HighCharts
+│   │   ├── Select2
+│   │   ├── bootstrap
+│   │   ├── bootstrapselect
+│   │   ├── bootstraptoggle
+│   │   ├── dataTables
+│   │   ├── fontawesome
+│   │   ├── jcloud
+│   │   ├── jqcloud
+│   │   ├── jquery
+│   │   ├── tabber
+│   │   └── typeahead
+│   └── tmp
 ├── script
 ├── t
 └── templates
@@ -107,12 +108,12 @@ rmarkdown::render(YOUR_RMD_FILE, bookdown::html_document2(number_sections=F, the
 
 ## @ Deployment
 
-Assume you place `my_xgrmod` under your `home` directory
+Assume you place `my_xgrm` under your `home` directory
 
 ```ruby
-cd ~/my_xgrmod
+cd ~/my_xgrm
 systemctl stop apache2.service
-morbo -l 'http://*:80/' script/my_xgrmod
+morbo -l 'http://*:80/' script/my_xgrm
 ```
 
 ## @ Contact
