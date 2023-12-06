@@ -1,0 +1,111 @@
+---
+title: ""
+always_allow_html: yes
+output:
+  rmarkdown::html_document:
+        toc: false
+        toc_depth: 2
+        number_sections: false
+        theme: readable
+        highlight: default
+        toc_float: false
+        code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(results="asis")
+knitr::opts_chunk$set(cache=FALSE)
+knitr::opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(warning=FALSE)
+knitr::opts_chunk$set(message=FALSE)
+knitr::opts_chunk$set(fig_cap="yes")
+```
+
+```{r, eval=FALSE, echo=FALSE}
+cd ~/Sites/XGR/XGRm-site
+################################################
+R
+library(tidyverse)
+## rmarkdown::render + bookdown::html_document2
+rmarkdown::render("now.RMD_RSlyser.Rmd", bookdown::html_document2(number_sections=F,theme=c("readable","united")[2], hightlight="default"), output_dir="/Users/hfang/Sites/XGR/XGRm-site/app/examples")
+
+q('no')
+################################################
+```
+
+
+# {.tabset .tabset-fade}
+
+
+## **Input: Region-Level Summary Data**
+Completed on: `r format(Sys.time(), "%a %b %d %X %Y")` (`r Sys.timezone()`), with the runtime of (`r ls_rmd$runtime`).
+
+> **An interactive table** for user-input genomic regions (n=`r nrow(ls_rmd$data_input)`, being processed). This table has four columns: with 1st column `Input GR` for input genomic regions in the format of `chr:start-end` (genome build `mm10`), 2nd column `Chromosome` for the chromosome, 3rd column `Length` for the region length (bp), 4nd column `Pvalue` for use-input significance information.
+
+```{r}
+
+data_input <- ls_rmd$data_input %>% mutate(chr=str_replace_all(dGR,':.*',''), start=str_replace_all(dGR,'.*:|-.*',''), end=str_replace_all(dGR,'.*-','')) %>% transmute(`Input GR`=dGR, Chromosome=chr, Length=as.numeric(end)-as.numeric(start) + 1, Pvalue=signif(Pvalue,digits=2))
+
+data_input %>% DT::datatable(options=list(pageLength=5,searchHighlight=T,dom='Bfrtip',buttons=c('csv','copy'), dom='t',scrollX=T), style='default', caption="", rownames=FALSE, escape=F, extensions=c('Buttons'))
+```
+
+
+## **Output: Linked Genes**
+
+> **Linked Gene table** contains information on genes (n=`r ls_rmd$num_LG`, linked from the input genomic regions), including the column `GScores` (ranged from 1 to 10) that quantifies the degree to which genes are likely modulated by input genomic regions. Please refer to **`Evidence table`** for details on the linking evidence.
+
+```{r}
+filename <- ls_rmd$xlsx_LG
+
+message(sprintf("'%s' '%s' (%s) ...", filename, getwd(), as.character(Sys.time())), appendLF=TRUE)
+
+tb <- openxlsx::read.xlsx(filename) %>% as_tibble() %>% transmute(`Linked genes`=Gene, GScores=signif(GScore,digits=4), Description)
+
+tb %>% DT::datatable(options=list(pageLength=5,searchHighlight=T,dom='Bfrtip',buttons=c('csv','copy'), dom='t',scrollX=T), style='default', caption="", rownames=FALSE, escape=F, extensions=c('Buttons'))
+```
+
+> **Evidence table** displays information about the genomic regions (listed under the column `GR`) that overlap the input genomic regions (listed under the column `Input GR`). The overlapped regions are used to define linked genes (listed under the column `Linked genes`) based on the evidence provided (see the column `Evidence`). The column `Evidence` indicates the datasets used, such as  `Proximity` for genomic regions in proximity, and the prefix `EP_` for enhancer-promoter datasets.
+
+```{r}
+filename <- ls_rmd$xlsx_LG_evidence
+
+message(sprintf("'%s' '%s' (%s) ...", filename, getwd(), as.character(Sys.time())), appendLF=TRUE)
+
+tb <- openxlsx::read.xlsx(filename) %>% as_tibble() %>% transmute(`Input GR`=dGR, GR, `Linked genes`=Gene, Evidence)
+
+tb %>% DT::datatable(options=list(pageLength=5,searchHighlight=T,dom='Bfrtip',buttons=c('csv','copy'), dom='t',scrollX=T), style='default', caption="", rownames=FALSE, escape=F, extensions=c('Buttons'))
+```
+
+
+## **Output: Gene Subnetwork**
+
+> **A network visualisation** of the subnetwork, with `r ls_rmd$vcount` genes/nodes color-coded by linked gene scores (ranged from 1 to 10).`r if(ls_rmd$combinedP<1){str_c(" The significance (empirical p-value) of observing the identified crosstalk by chance is ",as.character(ls_rmd$combinedP),", as estimated by a degree-preserving node permutation test. ")}` An editable pdf file is also available for download.
+
+
+```{r}
+hlink_pdf <- oAuxEmbed(ls_rmd$pdf_crosstalk, link.text="DOWNLOAD .pdf")
+```
+<div class="text-right">`r hlink_pdf`</div>
+
+```{r crosstalk, fig.cap="Visualisation of the subnetwork, with genes/nodes color-coded by linked gene scores (ranged from 1 to 10).", fig.width=6, fig.height=6, echo=FALSE, eval=T, fig.align="center",out.width="50%"}
+library(png)
+library(grid)
+filename <- ls_rmd$png_crosstalk
+img <- readPNG(filename)
+grid.raster(img)
+```
+
+<hr>
+
+> **An interactive table** for the subnetwork genes (n=`r ls_rmd$vcount`), with the column `GScores` for linked gene scores (ranged from 1 to 10).
+
+```{r}
+filename <- ls_rmd$xlsx_crosstalk
+
+message(sprintf("'%s' '%s' (%s) ...", filename, getwd(), as.character(Sys.time())), appendLF=TRUE)
+
+tb <- openxlsx::read.xlsx(filename) %>% as_tibble() %>% transmute(`Linked genes`=Genes, GScores=signif(-log10(Pvalue),digits=4), Description)
+
+tb %>% DT::datatable(options=list(pageLength=5,searchHighlight=T,dom='Bfrtip',buttons=c('csv','copy'), dom='t',scrollX=T), style='default', caption="", rownames=FALSE, escape=F, extensions=c('Buttons'))
+```
+

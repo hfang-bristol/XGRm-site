@@ -1,0 +1,396 @@
+/* http://stackoverflow.com/questions/18529274/change-navbar-color-in-twitter-bootstrap-3 */
+/* Generate your own Bootstrap navbar */
+/* http://work.smarchal.com/twbscolor/css/233a77192542ecf0f1ffbbbc0 */
+
+.navbar-default {
+  background-color: #f9f9f9;
+  border-color: #efefef;
+}
+.navbar-default .navbar-brand {
+  color: #233a77;
+}
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+  color: #192542;
+}
+.navbar-default .navbar-text {
+  color: #233a77;
+}
+.navbar-default .navbar-nav > li > a {
+  color: #233a77;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+  color: #192542;
+}
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+  color: #192542;
+  background-color: #efefef;
+}
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+  color: #192542;
+  background-color: #efefef;
+}
+.navbar-default .navbar-toggle {
+  border-color: #efefef;
+}
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+  background-color: #efefef;
+}
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: #233a77;
+}
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+  border-color: #233a77;
+}
+.navbar-default .navbar-link {
+  color: #233a77;
+}
+.navbar-default .navbar-link:hover {
+  color: #192542;
+}
+
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #233a77;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+    color: #192542;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+    color: #192542;
+    background-color: #efefef;
+  }
+}
+
+
+/* IMG shadow */
+.img-shadow {
+	max-width: 99%; 
+	border: 2px solid #EEEEEE; 
+	box-shadow: 5px 5px 2px #C0C0C0;
+}
+
+.iframe-shadow {
+	width: 100%;
+	border: 2px solid #EEEEEE; 
+	box-shadow: 5px 5px 2px #C0C0C0;
+	scrolling: auto;
+	frameborder: 0;
+}
+
+.my-fontfamily{
+	font-family: 'didot';
+}
+
+#toggleText { 
+    background-color: rgba(54,96,170,0.2);
+    font-size: 90%;
+    padding: 	0.5em;
+    border: 	solid 1px rgba(54,96,170,1);
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        -moz-box-shadow: 5px 5px 2px #C0C0C0;
+        -webkit-box-shadow: 5px 5px 2px #C0C0C0;
+        box-shadow: 5px 5px 2px #C0C0C0;
+}
+
+
+/* Global Styles */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'helvetica neue';
+}
+
+body {
+    padding-top: 50px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+}
+
+footer {
+    margin: 10px 0 15px 0;
+    font-size: 13px;
+}
+
+p {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.5;
+    margin: 5px 0;
+}
+
+a {
+    color: #233a77;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #192542;
+    text-decoration: none;
+}
+
+.highlight {
+    color: #233a77;
+    text-decoration: none;
+}
+
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+/*
+.navbar .brand:hover {
+  color: rgba(0,0,255,.5);
+  text-decoration: none;
+  background-color: transparent;
+}
+
+.navbar .nav > li > a:hover {
+  color: rgba(0,0,255,.5);
+  text-decoration: underline;
+  background-color: transparent;
+}
+*/
+
+
+.navbar-default .navbar-brand {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.navbar-default .navbar-nav > li > a {
+  font-size: 20px;
+  font-weight: 350;
+}
+
+.jumbotron0 {
+	padding-top: 40px;
+	padding-bottom: 10px;
+	margin: 0 0 10px 0;
+    /*background-image: url("https://il3.picdn.net/shutterstock/videos/5650049/thumb/1.jpg");
+    background-repeat: space; /* repeat repeat-x repeat-y no-repeat space round*/
+	background-color: rgba(250,250,250,0.2);
+	border-color: rgba(250,250,250,0.2);
+}
+
+.jumbotron {
+	padding-top: 40px;
+	padding-bottom: 10px;
+	margin: 0 0 0 0;
+	background-image: url("/app/img/OpenXGR.jumbotron.png");
+	background-repeat: space;
+	background-color: rgba(250,250,250,0.2);
+	border-color: rgba(250,250,250,0.2);
+}
+
+.jumbotron1 {
+	padding-top: 20px;
+	padding-bottom: 10px;
+	margin: 0 0 0 0;
+	background-image: url("/app/img/OpenXGR.jumbotron1.png");
+	background-repeat: space;
+	background-color: rgba(250,250,250,0.2);
+	border-color: rgba(250,250,250,0.2);
+}
+
+/* Bootstrap 3 dropdown menu to work on mouse-over */
+.dropdown:hover .dropdown-menu {
+	display: block;
+}
+
+
+/* Change bootstrap tooltip color */
+.my-tooltip + .tooltip > .tooltip-inner {
+	background-color: rgba(54,96,170, 0.9); 
+    color: #FFFFFF; 
+    font-size: 14px;
+    border: 1px solid transparent;
+    box-shadow: 5px 5px 2px #ccc;
+    max-width: 350px;
+}
+/* Tooltip on top */
+.my-tooltip + .tooltip.top > .tooltip-arrow {
+	border-top: 5px solid rgba(54,96,170, 0.9);
+}
+/* Tooltip on bottom */
+.my-tooltip + .tooltip.bottom > .tooltip-arrow {
+	border-bottom: 5px solid rgba(54,96,170, 0.9);
+}
+/* Tooltip on left */
+.my-tooltip + .tooltip.left > .tooltip-arrow {
+	border-left: 5px solid rgba(54,96,170, 0.9);
+}
+/* Tooltip on right */
+.my-tooltip + .tooltip.right > .tooltip-arrow {
+	border-right: 5px solid rgba(54,96,170, 0.9);
+}
+
+/* datatable */
+/*
+tbody > tr > td{
+	max-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+*/
+
+tbody > tr > td .sig{
+	color: rgba(0,100,0,0.8);
+	font-weight: bold;
+}
+thead > tr > th{
+	background-color: rgba(204,204,204,0.5);
+}
+tfoot > tr > th{
+	background-color: rgba(204,204,204,0.5);
+}
+
+/* rotate header */
+th.rotate {
+	height: 40px;
+	padding: 0px;
+	/*width: 20px !important;*/
+	/*font-weight: normal;*/
+}
+th.rotate > div {
+     -moz-transform: rotate(-15.0deg);  /* FF3.5+ */
+      -ms-transform: rotate(-15.0deg);  /* IE9+ */
+       -o-transform: rotate(-15.0deg);  /* Opera 10.5 */
+  -webkit-transform: rotate(-15.0deg);  /* Safari 3.1+, Chrome */
+          transform: rotate(-15.0deg);  /* Standard */
+			 /*filter:  progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083);  /* IE6,IE7 */
+ 			  width: 0px;
+}
+
+/* http://codeinpink.github.io/blog/2015/07/adding-autocomplete-to-inputs-through-twitters-typeahead/ 
+#scrollable-dropdown-menu .tt-dropdown-menu{
+  max-height: 150px;
+  overflow-y: auto;
+}
+*/
+
+#multiple-datasets .header-name {
+  margin: 0 10px 1px 10px;
+  padding: 0;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+  color: rgba(54,96,170,1);
+  font-size: 15px; /* Set input font size */
+  font-weight: bold;
+}
+
+.typeahead, .tt-query, .tt-hint {
+	border: 1px solid rgba(54,96,170,0.5);
+	border-radius: 8px;
+	font-size: 15px; /* Set input font size */
+	height: 45px;
+	line-height: 35px;
+	outline: medium none;
+	padding: 8px 12px;
+	width: 350px;
+}
+.typeahead {
+	background-color: #FFFFFF;
+}
+.typeahead:focus {
+	border: 3px solid rgba(54,96,170,1);
+}
+.tt-query {
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+.tt-hint {
+	color: #999999;
+}
+.tt-menu {
+  	max-height: 350px;
+  	overflow-y: auto;
+    background: rgba(250,250,250,1);
+    width: 100%;
+  	margin-top: 8px;
+    border: 2px solid rgba(54,96,170,1);
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(54,96,170,0.2);
+}
+.tt-suggestion {
+    overflow: hidden;
+    display: table;
+    width: 100%;
+    padding: 0 0 0 5px;
+    border-bottom: 1px solid rgba(54,96,170,0.2);
+    text-align: left;
+    height: 15px;
+}
+.tt-suggestion:hover {
+	cursor: pointer;
+	background-color: rgba(54,96,170,0.9);
+	color: #FFFFFF;
+}
+.tt-suggestion p {
+	margin: 0;
+}
+
+
+/* PUBLICATION */
+
+fieldset { -moz-border-radius: 5px; 
+           -webkit-border-radius: 5px; 
+           border-radius: 5px; 
+           -moz-box-shadow: 5px 5px 2px #C0C0C0;
+           -webkit-box-shadow: 5px 5px 2px #C0C0C0;
+           box-shadow: 5px 5px 2px #C0C0C0;
+}
+
+fieldset.purple { background-color: #CCCCFF; 
+                  -moz-border-radius: 5px; 
+                  -webkit-border-radius: 5px; 
+                  border-radius: 5px; 
+                  -moz-box-shadow: 5px 5px 2px #C0C0C0;
+                  -webkit-box-shadow: 5px 5px 2px #C0C0C0;
+                  box-shadow: 5px 5px 2px #C0C0C0;
+}
+
+.img_responsive {
+	width: 80%;
+	height: auto;
+}
+
+.about_title {
+	margin: 	0.5em 0;
+	padding: 	0.5em;
+	line-height:1.3em;
+	font-size: 	15px;
+	font-weight: 300;
+	color: 		#0F0F0F;
+	background-color: rgba(54,96,170,0.1);
+	border: 	solid 1px #eee;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.citation_title {
+	margin: 	1em 0;	
+	padding: 	0.5em;
+	font-size: 	15px;
+	background-color: rgba(54,96,170,0.1);
+	border: 	solid 1px #eee;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.burgundy_text { color: #800000; }
+.sandy_text { color: #192542; }

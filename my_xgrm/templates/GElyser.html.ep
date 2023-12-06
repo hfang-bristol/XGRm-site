@@ -1,0 +1,585 @@
+% layout 'default', tab => '/XGRm/GElyser';
+% title 'GElyser - performing enrichment analysis for genes using ontologies';
+
+% content_for css => begin
+	
+	<link type="text/css" href="https://cdn.datatables.net/buttons/1.1.0/css/buttons.dataTables.min.css" rel="stylesheet">
+	<style>
+		td.highlight {
+			font-weight: bold;
+			color: blue;
+		}
+	</style>
+% end
+% content_for scripts => begin
+	
+	<script type="text/javascript">
+	
+		$(document).ready(function(){
+			
+			// For results container
+			var jfile = '<%= $ajax_txt_file %>';
+			var post_flag = '<%= $post_flag %>';
+			if(jfile != ''){
+				// show results
+				$("#results-container").addClass("in");
+				// hide form
+				$("#form-container").removeClass("in");
+			}else{
+				// error only occurs after the submit
+				if(post_flag==1){
+					// show error
+					$("#error-container").addClass("in");
+				}
+			}
+
+		});
+		
+	</script>
+	
+% end
+
+
+<%
+my $ajax_txt_file='';
+my $post_flag='';
+
+my $info='
+<h5>Input</h5>
+<ul>
+<li>(<b>Step 1</b>): Input a list of genes, for example, <a href="/app/examples/eg_GElyser.txt" download="/app/examples/eg_GElyser.txt" target="/app/examples/eg_GElyser.txt"><i class="fa fa-cloud-download fa" aria-hidden="true"></i>&nbspExample Input</a>. Please ensure that the gene identifiers provided are official symbols; otherwise, the error messages will be prompted.
+<li>(<b>Step 2</b>): Choose from a list of supported ontologies.
+<li>(<b>More Controls</b>): Use additional parameters to fine-tune the steps described above.
+</ul>
+
+<h5>Output</h5>
+<ul>
+<li>(<a href="/app/examples/_tmp_RMD_GElyser.html" download="/app/examples/_tmp_RMD_GElyser.html" target="/app/examples/_tmp_RMD_GElyser.html"><i class="fa fa-cloud-download fa" aria-hidden="true"></i>&nbspExample Output</a>) includes interactive tables and high-quality figures presenting the enrichment results. A summary of the input data and the runtime (computed on the server side) is also returned for reference.
+</ul>
+
+<h5>Other information</h5>
+<ul>
+<li>By default, the text box at <b>Step 1</b> is pre-filled with the provided example when the interface page is first-visited or refreshed. 
+<li>When the user clicks on any text area within the box <b>FOR THE FIRST TIME</b>, the pre-filled example <b>DISAPPEARS</b>, and the text box is ready to receive user-input data.
+<li>Before clicking the <b>SUBMIT</b> button, please replace the example with your own data <b>EVERY TIME</b>.
+</ul>
+';
+
+my $default_obo='GOBP';
+my $i=0;
+my $obo_order;
+$obo_order->{"GOBP"}=$i++;
+$obo_order->{"GOMF"}=$i++;
+$obo_order->{"GOCC"}=$i++;
+$obo_order->{"KEGG"}=$i++;
+$obo_order->{"KEGGEnvironmentalProcess"}=$i++;
+$obo_order->{"KEGGOrganismalSystem"}=$i++;
+$obo_order->{"KEGGMetabolism"}=$i++;
+$obo_order->{"KEGGGeneticProcess"}=$i++;
+$obo_order->{"KEGGCellularProcess"}=$i++;
+$obo_order->{"MP"}=$i++;
+$obo_order->{"MDODD"}=$i++;
+
+my $obos={
+    GOBP => "GO Biological Process (GOBP)",
+    GOMF => "GO Molecular Function (GOMF)",
+    GOCC => "GO Cellular Component (GOCC)",
+    
+    KEGG => "KEGG pathways (ALL)",
+    KEGGEnvironmentalProcess => "KEGG pathways (Environmental Information Processing)",
+    KEGGOrganismalSystem => "KEGG pathways (Organismal Systems)",
+    KEGGMetabolism => "KEGG pathways (Metabolism)",
+    KEGGGeneticProcess => "KEGG pathways (Genetic Information Processing)",
+    KEGGCellularProcess => "KEGG pathways (Cellular Processes)",
+    
+    MP => "Mammalian Phenotype Ontology (MPO)",
+    MDODD => "Mondo Disease Ontology (MONDO)",
+};
+
+my $example_genes='
+Greb1
+Dlgap1
+Dock5
+Bloc1s6
+A530072M11Rik
+Zfp386
+Abcb11
+E2f6
+Spg11
+Ott
+Kcnab1
+D430006K04
+Sult6b1
+D130020L05Rik
+Dtwd2
+Akap6
+Gchfr
+Ermard
+Adi1
+Pnoc
+Galk2
+Fbln2
+Bcr
+Heatr5a
+Wdfy2
+4932414J04Rik
+2310058N22Rik
+Stra6
+Fsip1
+2900082C11Rik
+Fosb
+LOC102637912
+Ptgdr2
+Prss55
+Spata7
+Elp3
+Igh-VJ558
+Ing1
+Nacc1
+Psors1c2
+Spint1
+Onecut3
+Ccdc37
+Rrm2
+Shf
+Vps39
+Tmem87a
+Gm4983
+1700030L22Rik
+Nr2c2
+Colec11
+Rexo4
+Cdca7l
+Prex1
+Msra
+Vmn2r29
+Rmdn1
+Ppip5k1
+1700001C19Rik
+Epc2
+Vat1l
+Dock4
+AV039307
+Tmco6
+Micall1
+Vit
+Nup210
+Homez
+Catsperb
+Ldoc1l
+Hpcal1
+1700025K24Rik
+Il22
+Patl2
+4933409F18Rik
+Pxdn
+Ckap2l
+Plekhd1os
+Sult4a1
+Haus2
+Nmi
+Ganc
+Exd1
+Serinc4
+Acin1
+Kif6
+Sncaip
+Pop1
+Gucy1b2
+Ccdc32
+Vmac
+Scfd1
+Csrnp3
+LOC102642189
+Acn9
+Lpin1
+Kazn
+Dnajc17
+Fbxo4
+Lrp2
+Hmgxb4
+Snhg11
+Lhx6
+Iqsec1
+Heatr5b
+Vps37b
+Pla2g4b
+Gm14023
+Wdsub1
+Fry
+Flnc
+D8Ertd82e
+Baalc
+Pot1b
+Adam26a
+G2e3
+Yipf7
+Spsb1
+Tox4
+A630095E13Rik
+Pcdh8
+Fbln1
+Mrps25
+Olfr508
+Rpgrip1
+Fnbp1l
+Samsn1
+Fbxo32
+Slc41a1
+5330427O13Rik
+Adcy1
+2010204K13Rik
+Itgb1bp1
+Gcat
+Smco4
+1700007K09Rik
+4930427A07Rik
+Lama3
+Nrip1
+AW549877
+Srl
+Rasl12
+Pkd2l2
+Cst6
+2610306M01Rik
+Cttnbp2
+LOC102638889
+Bub1b
+Ptpn14
+LOC102639192
+Asb15
+Pinx1
+LOC102633167
+Id2
+LOC433503
+Cish
+Soat1
+Sfxn1
+Ell3
+F730043M19Rik
+Col23a1
+Gm5108
+1700020I14Rik
+Vwa5b1
+Ehd3
+Zfp106
+Kcnip3
+Rassf6
+Atad2
+Ttbk2
+Mmp14
+Dpysl2
+Adam29
+Decr1
+Smek1
+Il13
+Allc
+Lhx9
+Cspg5
+Slc30a6
+Lmnb2
+Arhgef2
+Mboat2
+4930563E22Rik
+Spp1
+Slc17a9
+Cdrt4os1
+Spc25
+Fez1
+Mttp
+Grap2
+Scara5
+Ap4s1
+Clec4a2
+Ank1
+Rsf1
+Lamp3
+Eif4e3
+Jmjd7
+4933434M16Rik
+Arg2
+Pdzk1ip1
+Card10
+4930402D18Rik
+8030451A03Rik
+Hnrnpc
+Frmpd1
+Itgb3
+Asprv1
+Hectd1
+Slc17a6
+Cntn6
+Trim13
+Lurap1
+Pkn1
+Fntb
+Rnase2a
+Cfhr1
+Rac2
+Kcnh5
+4930579H20Rik
+Fam208b
+Cdh20
+Prss51
+Syne2
+Pcdhb21
+Ttc38
+Phyhip
+Lair1
+Grn
+Grhl2
+Cd300lg
+Traf3ip2
+Npr3
+Cyp2c37
+Daam1
+Ccnd2
+Gck
+Pkd2
+1700041C23Rik
+1700054M17Rik
+Tex38
+Myo7b
+Slc44a3
+Ctcflos
+Olfr643
+LOC102638947
+Olfr1364
+Mms22l
+4930533N22Rik
+Irx2
+4930404H11Rik
+Sel1l3
+Klb
+Psmd11
+Fras1
+Ripk4
+4930558J22Rik
+Rapgef5
+LOC102642799
+Apobec2
+Prr27
+Ccndbp1
+Rnf220
+Slc6a4
+Kcna1
+Asph
+Gm5128
+1700037N05Rik
+Il15
+Snrnp27
+Gpatch11
+Tesk2
+Pde4a
+Vcpkmt
+Wwp1
+Gm7968
+5730507C01Rik
+4933404G15Rik
+Rasal1
+Ints8
+Ppih
+Spef2
+Pknox2
+4930477O03Rik
+Pgf
+Esrp2
+Tmem81
+Asgr1
+Cdyl2
+Map1a
+Trim34a
+Cyp19a1
+Mmgt2
+Lmod3
+Nrg3
+Oip5
+Dcst1
+Lrp8
+Tbc1d31
+Csgalnact1
+Npas3
+Mapk10
+Tcte3
+';
+%>
+
+<div class="container">
+	<div class="jumbotron">
+	
+		<div class="text-center">
+			% if(1){
+				<a class="btn btn-primary btn active" role="button" href="/XGRm/GElyser"><i class="fa fa-meetup fa-lg  fa-flip-horizontal"></i>&nbsp;&nbsp;<strong>GElyser</strong>: <b>G</b>ene-centric <b>E</b>nrichment ana<b>lyser</b></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:newWin('/app/examples/_tmp_RMD_GElyser.html', 'Example', '909', '1169')"><i class="fa fa-key fa-lg" aria-hidden="true"></i>&nbsp;Example</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="javascript:newWin('/XGRmbooklet/gelyser.html', 'XGRmbooklet', '909', '1169')"><span class="fa fa-book fa-lg fa-flip-horizontal"></span>&nbsp;Manual</a>&nbsp;&nbsp;&nbsp;
+			% }
+		</div>
+		
+	</div>
+</div>
+
+
+<!-- error text -->
+<div id="error-container" class="container collapse">
+	<div id="errorText" style="display: block">
+		<p class="text_justify">
+		
+<h5>Error Messages: your input at Step 1</h5>
+<ul>
+<li>Please check your input genes (<b>official symbols</b>); otherwise, they will be disregarded.
+<li>Before clicking the <strong>SUBMIT</strong> button, please paste your own data at Step 1 <strong>EVERY TIME</strong>. Note that the text box at Step 1 is pre-filled with the provided example when the interface page is first-visited or refreshed.
+<li>If the above issues are resolved, and you still receive the error messages, it simply means that <strong>no enrichment has been returned</strong>.
+</ul>
+
+		</p>
+	</div>
+</div>
+
+<hr>
+
+<!-- progress bar -->
+<div id="progress-container" class="container collapse">
+	<div class="progress progress-striped active">
+		<div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+			<i class="fa fa-cog fa-spin fa-lg"></i>&nbsp;&nbsp;GElyser is analysing your input gene list ... 
+		</div>
+	</div>
+</div>
+
+
+<!-- form -->
+<div id="form-container" class="container collapse in">
+	
+	<a id="displayText" href="javascript:toggle();" class="btn btn-primary btn-sm active">Show Info</a>
+	
+	<div id="toggleText" style="display: none">
+		<p class="text_justify">
+			<%== $info %>
+		</p>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-12">
+			
+			<form id="submit-form" class="form-horizontal" enctype="multipart/form-data" method="POST">
+				
+				<p><i><strong>Step 1</strong></i>:&nbsp;&nbsp;Paste your genes (official symbols; see<a href="/app/examples/eg_GElyser.txt" download="/app/examples/eg_GElyser.txt" target="/app/examples/eg_GElyser.txt">&nbspExample Input</a>).&nbsp;<strong class="my-tooltip" data-toggle="tooltip" data-placement="auto right" title="After clicking on the text area, the pre-filled example will disappear, leaving the text box ready for the user to input their own data."><i class="fa fa-info-circle fa-1x"></i></strong></p>
+				
+				<div class="form-group">
+					<div class="col-sm-12">
+						<textarea id="genelist" name="genelist" class="form-control table" rows="4" required="required" onfocus="clearFieldFirstTime(this);"><%== $example_genes %></textarea>
+					</div>
+				</div>
+
+				<p><i><strong>Step 2</strong></i>:&nbsp;&nbsp;Choose which ontology to use.</p>
+				<div class="form-group">
+					<label class="control-label col-sm-5" for="obo">Ontology:</label>
+					<div class="col-sm-7">
+						<select name="obo" id="obo" class="form-control">
+							% foreach my $obo (sort{$obo_order->{$a} <=> $obo_order->{$b}} keys %$obo_order) {
+							% my $selected = ($obo eq $default_obo)? ' SELECTED':'';
+							% if ($obo eq 'GOBP'){
+								<OPTGROUP LABEL="Gene Ontology (GO)">
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+							% }elsif ($obo eq 'KEGG'){
+								</OPTGROUP>
+								<OPTGROUP LABEL="KEGG Pathways">
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+							% }elsif ($obo eq 'MP'){
+								</OPTGROUP>
+								<OPTGROUP LABEL="Phenotypes">
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+							% }elsif ($obo eq 'MDODD'){
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+								</OPTGROUP>
+							% }else{
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+							% }
+							%}
+						</select>
+					</div>
+				</div>
+				
+				<!-- Advanced begin ################### -->
+				<div class="form-group" id="advanced-toggle">
+					<div class="col-md-12">
+						 
+						<button type="button" class="btn btn-default btn-block btn-sm" style="text-align:left" data-toggle="collapse" data-target="#more-options">
+							<i class="fa fa-chevron-circle-down fa-lg"></i> <strong class="my-tooltip" data-toggle="tooltip" data-placement="auto right" title="Specify additional parameters for more controls">&nbsp;More Controls</strong></a>
+						</button>
+						
+						<br>
+						
+						<div id="more-options" class="row collapse">
+							<div class="col-md-12" style="border: 1px solid #fff">
+
+								<!-- min overlap -->
+								<i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;Minimum number of overlapped genes.
+								<div class="form-group">
+									<label class="control-label col-sm-5">Number of genes:</label>
+									<div class="col-sm-7">
+										<select name="min_overlap" class="form-control">
+											<option value="3" selected>3</a>
+											<option value="5">5</a>
+										</select>
+									</div>			
+								</div>
+
+								<!-- FDR cutoff -->
+								<i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;Significance of terms.
+								<div class="form-group">
+									<label class="control-label col-sm-5">False Discovery Rate (FDR):</label>
+									<div class="col-sm-7">
+										<select name="FDR_cutoff" class="form-control">
+											<option value="5e-2">5e-2</a>
+											<option value="1e-2">1e-2</a>
+											<option value="NULL" selected>None</a>
+										</select>
+									</div>									
+								</div>
+								
+							</div>
+						</div>
+
+						
+					</div>
+				</div>
+				<!-- Advanced end ################### -->
+				
+				<!-- Button -->
+				<div class="form-group">
+					<label class="col-md-12 control-label" for="submit"></label>
+					<div class="col-md-12">
+						<input class="btn btn-primary btn-block btn-sm active" id="submit" type="submit" value="SUBMIT" />
+					</div>
+				</div>
+				
+			</form>
+			
+		</div>
+		
+	</div>
+	
+</div>
+
+
+<div id="results-container" class="container collapse">
+
+	<div class="row">
+		<div class="col-lg-12">
+			<h3 class="my-fontfamily">GElyser Results&nbsp;&nbsp;<a class="btn btn-danger btn-sm active" role="button" href="javascript:newWin('<%= $ajax_rmd_html_file %>', 'ZOOM', '909', '1169')"><i class="fa fa-search-plus fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;ZOOM</a>&nbsp;&nbsp;<a class="btn btn-danger btn-sm active" role="button" href="<%= $ajax_rmd_html_file %>" download="<%= $ajax_rmd_html_file %>" target="<%= $ajax_rmd_html_file %>"><i class="fa fa-cloud-download fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;DOWNLOAD</a></h3>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="form-group">
+			<div class="col-lg-12">
+				<div class="embed-responsive embed-responsive-4by3">
+					<iframe class="embed-responsive-item" src="<%= $ajax_rmd_html_file %>"></iframe>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+  	
+</div>
+

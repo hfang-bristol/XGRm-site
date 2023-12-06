@@ -1,0 +1,82 @@
+---
+title: ""
+always_allow_html: yes
+output:
+  rmarkdown::html_document:
+        toc: false
+        toc_depth: 2
+        number_sections: false
+        theme: readable
+        highlight: default
+        toc_float: false
+        code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(results="asis")
+knitr::opts_chunk$set(cache=FALSE)
+knitr::opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(warning=FALSE)
+knitr::opts_chunk$set(message=FALSE)
+knitr::opts_chunk$set(fig_cap="yes")
+```
+
+```{r, eval=FALSE, echo=FALSE}
+cd ~/Sites/XGR/XGRm-site
+################################################
+R
+library(tidyverse)
+## rmarkdown::render + bookdown::html_document2
+rmarkdown::render("now.RMD_GSlyser.Rmd", bookdown::html_document2(number_sections=F,theme=c("readable","united")[2], hightlight="default"), output_dir="/Users/hfang/Sites/XGR/XGRm-site/app/examples")
+
+q('no')
+################################################
+```
+
+
+# {.tabset .tabset-fade}
+
+
+## **Input: Gene-Level Summary Data**
+Completed on `r format(Sys.time(), "%a %b %d %X %Y")` (`r Sys.timezone()`), with the runtime of `r ls_rmd$runtime`.
+
+> **An interactive table** for user-input summary data (n=`r nrow(ls_rmd$data_input)` genes, being processed). This table has three columns:  1st column `Genes` for gene symbols, 2nd column `Pvalue` for use-input significance information, and 3rd column `Description` for gene description.
+
+```{r}
+data_input <-  ls_rmd$data_input
+
+data_input %>% DT::datatable(options=list(pageLength=5,searchHighlight=T,dom='Bfrtip',buttons=c('csv','copy'), dom='t',scrollX=T), style='default', caption="", rownames=FALSE, escape=F, extensions=c('Buttons'))
+```
+
+
+## **Output: Gene Subnetwork**
+
+> **A network visualisation** of the subnetwork, with `r ls_rmd$vcount` genes/nodes color-coded based on input gene significance information.`r if(ls_rmd$combinedP<1){str_c(" The significance (empirical p-value) of observing the identified crosstalk by chance is ",as.character(ls_rmd$combinedP),", as estimated by a degree-preserving node permutation test. ")}` An editable pdf file is also available for download.
+
+
+```{r}
+hlink_pdf <- oAuxEmbed(ls_rmd$pdf_crosstalk, link.text="DOWNLOAD .pdf")
+```
+<div class="text-right">`r hlink_pdf`</div>
+
+```{r crosstalk, fig.cap="Visualisation of the identified subnetwork, with genes/nodes color-coded by input gene significance information; that is, -log10(pvalue).", fig.width=6, fig.height=6, echo=FALSE, eval=T, fig.align="center",out.width="50%"}
+library(png)
+library(grid)
+filename <- ls_rmd$png_crosstalk
+img <- readPNG(filename)
+grid.raster(img)
+```
+
+<hr>
+
+> **An interactive table** for the subnetwork genes (n=`r ls_rmd$vcount`), with the column `Pvalue` for input gene significance information.
+
+```{r}
+filename <- ls_rmd$xlsx_crosstalk
+
+message(sprintf("'%s' '%s' (%s) ...", filename, getwd(), as.character(Sys.time())), appendLF=TRUE)
+
+tb <- openxlsx::read.xlsx(filename) %>% as_tibble() %>% transmute(Genes, Pvalue=signif(Pvalue,digits=4), Description)
+
+tb %>% DT::datatable(options=list(pageLength=5,searchHighlight=T,dom='Bfrtip',buttons=c('csv','copy'), dom='t',scrollX=T), style='default', caption="", rownames=FALSE, escape=F, extensions=c('Buttons'))
+```

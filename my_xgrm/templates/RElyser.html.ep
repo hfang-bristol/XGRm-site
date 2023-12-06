@@ -1,0 +1,1159 @@
+% layout 'default', tab => '/XGRm/RElyser';
+% title 'RElyser - genomic regions linked to genes for enrichment analysis';
+
+% content_for css => begin
+	
+	<link type="text/css" href="https://cdn.datatables.net/buttons/1.1.0/css/buttons.dataTables.min.css" rel="stylesheet">
+	<style>
+		td.highlight {
+			font-weight: bold;
+			color: blue;
+		}
+	</style>
+% end
+% content_for scripts => begin
+	
+	<script type="text/javascript">
+	
+		$(document).ready(function(){
+			
+			// For results container
+			var jfile = '<%= $ajax_txt_file %>';
+			var post_flag = '<%= $post_flag %>';
+			if(jfile != ''){
+				// show results
+				$("#results-container").addClass("in");
+				// hide form
+				$("#form-container").removeClass("in");
+			}else{
+				// error only occurs after the submit
+				if(post_flag==1){
+					// show error
+					$("#error-container").addClass("in");
+				}
+			}
+
+		});
+	</script>
+	
+% end
+
+
+<%
+my $ajax_txt_file='';
+my $post_flag='';
+
+my $info='
+<h5>Input</h5>
+<ul>
+<li>(<b>Step 1</b>): Provide a list of user-input genomic regions (<b>Step 1</b>). For example, <a href="/app/examples/eg_RElyser.txt" download="/app/examples/eg_RElyser.txt" target="/app/examples/eg_RElyser.txt"><i class="fa fa-cloud-download fa" aria-hidden="true"></i>&nbspExample Input</a>.
+<li>(<b>Step 2</b>): Use genomic proximity, enhancer-gene maps, or promoter capture Hi-C to identify linked genes.
+<li>(<b>Step 3</b>): Choose from a list of supported ontologies.
+<li>(<b>More Controls</b>): Use additional parameters to fine-tune the steps described above.
+</ul>
+
+<h5>Output</h5>
+<ul>
+<li>(<a href="/app/examples/_tmp_RMD_RElyser.html" download="/app/examples/_tmp_RMD_RElyser.html" target="/app/examples/_tmp_RMD_RElyser.html"><i class="fa fa-cloud-download fa" aria-hidden="true"></i>&nbspExample Output</a>) includes interactive tables and high-quality figures for enrichment results. A summary of the input data and the runtime (computed on the server side) is also returned for reference.
+</ul>
+
+<h5>Other information</h5>
+<ul>
+<li>By default, the text box at <b>Step 1</b> is pre-filled with the provided example when the interface page is first-visited or refreshed.
+<li>When the user clicks on any text area within the box <b>FOR THE FIRST TIME</b>, the pre-filled example <b>DISAPPEARS</b>, and the text box is ready to receive user-input data.
+<li>Before clicking the <b>SUBMIT</b> button, please replace the example with your own data <b>EVERY TIME</b>.
+<li>For bug reports and inquiries, please send an email <a href="mailto:fh12355@rjh.com.cn"><i class="fa fa-envelope-o"></i></a> to get your feedback (also we want to learn about strengths and weaknesses). 
+</ul>
+';
+
+my $default_crosslink='proximity_50000';
+my $i=0;
+my $crosslink_order;
+$crosslink_order->{'proximity_1000'}=$i++;
+$crosslink_order->{'proximity_5000'}=$i++;
+$crosslink_order->{'proximity_10000'}=$i++;
+$crosslink_order->{'proximity_20000'}=$i++;
+$crosslink_order->{'proximity_50000'}=$i++;
+$crosslink_order->{'proximity_500000'}=$i++;
+$crosslink_order->{'proximity_1000000'}=$i++;
+$crosslink_order->{'RGBmm_EP_PMID32728240'}=$i++;
+
+my $crosslinks={
+	proximity_1000 => "Within 1Kb",
+	proximity_5000 => "Within 5Kb",
+	proximity_10000 => "Within 10Kb",
+	proximity_20000 => "Within 20Kb",
+	proximity_50000 => "Within 50Kb",
+	proximity_500000 => "Within 500Kb",
+	proximity_1000000 => "Within 1Mb",
+	RGBmm_EP_PMID32728240 => "Enhancer-promoter interactions from PMID32728240",
+};
+
+my $default_obo='GOBP';
+$i=0;
+my $obo_order;
+$obo_order->{"GOBP"}=$i++;
+$obo_order->{"GOMF"}=$i++;
+$obo_order->{"GOCC"}=$i++;
+$obo_order->{"KEGG"}=$i++;
+$obo_order->{"KEGGEnvironmentalProcess"}=$i++;
+$obo_order->{"KEGGOrganismalSystem"}=$i++;
+$obo_order->{"KEGGMetabolism"}=$i++;
+$obo_order->{"KEGGGeneticProcess"}=$i++;
+$obo_order->{"KEGGCellularProcess"}=$i++;
+$obo_order->{"MP"}=$i++;
+$obo_order->{"MDODD"}=$i++;
+
+my $obos={
+    GOBP => "GO Biological Process (GOBP)",
+    GOMF => "GO Molecular Function (GOMF)",
+    GOCC => "GO Cellular Component (GOCC)",
+    
+    KEGG => "KEGG pathways (ALL)",
+    KEGGEnvironmentalProcess => "KEGG pathways (Environmental Information Processing)",
+    KEGGOrganismalSystem => "KEGG pathways (Organismal Systems)",
+    KEGGMetabolism => "KEGG pathways (Metabolism)",
+    KEGGGeneticProcess => "KEGG pathways (Genetic Information Processing)",
+    KEGGCellularProcess => "KEGG pathways (Cellular Processes)",
+    
+    MP => "Mammalian Phenotype Ontology (MPO)",
+    MDODD => "Mondo Disease Ontology (MONDO)",
+};
+
+my $example_regions='
+REGION
+chr20:4090134-4092134
+chr11:117973237-117975237
+chr1:212634309-212636309
+chr1:212635821-212637821
+chr17:36127082-36129082
+chr20:4081996-4083996
+chr17:36143118-36145118
+chr17:36132988-36134988
+chr1:212637708-212639708
+chr2:113097209-113099209
+chr2:120231206-120233206
+chr17:36131132-36133132
+chr17:36153351-36155351
+chr19:34988412-34990412
+chr4:184859572-184861572
+chr9:114999239-115001239
+chr17:36148367-36150367
+chr11:105161708-105163708
+chr20:4084503-4086503
+chr16:28523643-28525643
+chr14:105033348-105035348
+chr7:157317429-157319429
+chr6:108778824-108780824
+chr11:117958953-117960953
+chr20:49771450-49773450
+chr8:24270974-24272974
+chr5:35883470-35885470
+chr14:105025267-105027267
+chr2:113502282-113504282
+chr8:24244240-24246240
+chr20:49775199-49777199
+chr8:95121884-95123884
+chr14:65209982-65211982
+chr6:108781602-108783602
+chr1:89036423-89038423
+chr6:37050571-37052571
+chr7:20450048-20452048
+chr1:160664662-160666662
+chr19:13207283-13209283
+chr1:89069318-89071318
+chr20:49767554-49769554
+chr9:111943809-111945809
+chr13:76936506-76938506
+chr20:63552982-63554982
+chr14:35375014-35377014
+chr11:117969815-117971815
+chr4:7653156-7655156
+chr7:20437713-20439713
+chr13:76938405-76940405
+chr11:117946087-117948087
+chr9:114995009-114997009
+chr6:113670624-113672624
+chr1:157105696-157107696
+chr2:203742724-203744724
+chr6:37048779-37050779
+chr8:103110679-103112679
+chr17:34313149-34315149
+chr2:20361009-20363009
+chr9:105070155-105072155
+chr14:35373525-35375525
+chr12:24660789-24662789
+chr6:105980517-105982517
+chr6:113667834-113669834
+chr6:113653551-113655551
+chr11:117949561-117951561
+chr8:103104647-103106647
+chr6:14108020-14110020
+chr4:88446584-88448584
+chr19:54288451-54290451
+chr10:110524959-110526959
+chr1:32919727-32921727
+chr6:18327507-18329507
+chr2:162260413-162262413
+chr2:28363114-28365114
+chr8:103079389-103081389
+chr8:24228507-24230507
+chr6:89034314-89036314
+chr2:162257492-162259492
+chr1:247359956-247361956
+chr14:75514265-75516265
+chr7:155360238-155362238
+chr21:38958445-38960445
+chr9:114988442-114990442
+chr1:12152178-12154178
+chr10:70191813-70193813
+chr6:7057551-7059551
+chr5:132497357-132499357
+chr2:42101421-42103421
+chr8:60908874-60910874
+chr3:105358414-105360414
+chr5:151005642-151007642
+chr11:35047028-35049028
+chr11:59679566-59681566
+chr19:18273873-18275873
+chr22:44638085-44640085
+chr1:24847678-24849678
+chr11:117944137-117946137
+chr2:230410886-230412886
+chr3:179473140-179475140
+chr5:132495364-132497364
+chr3:105316999-105318999
+chr19:34973227-34975227
+chr4:184745364-184747364
+chr7:20443599-20445599
+chr3:177242612-177244612
+chr1:160766891-160768891
+chr9:114952985-114954985
+chr1:206752778-206754778
+chr2:234291124-234293124
+chr4:184738914-184740914
+chr11:35049172-35051172
+chr13:23159257-23161257
+chr2:20356886-20358886
+chr10:123996839-123998839
+chr16:56978951-56980951
+chr2:118935973-118937973
+chr2:142867522-142869522
+chr5:151499844-151501844
+chr6:18329788-18331788
+chr19:46886478-46888478
+chr1:161389170-161391170
+chr7:140230937-140232937
+chr11:59221946-59223946
+chr3:105352700-105354700
+chr6:7050610-7052610
+chr11:35235485-35237485
+chr1:157112219-157114219
+chr7:20448332-20450332
+chr7:20465708-20467708
+chr20:63853417-63855417
+chr6:137723842-137725842
+chr11:35076981-35078981
+chr3:129364359-129366359
+chr6:18500478-18502478
+chr22:49970141-49972141
+chr20:62616872-62618872
+chr20:50502514-50504514
+chr11:59223926-59225926
+chr3:196122054-196124054
+chr6:137950347-137952347
+chr6:28980911-28982911
+chr2:191665306-191667306
+chr11:35065488-35067488
+chr6:105982254-105984254
+chr7:6347839-6349839
+chr10:123994290-123996290
+chr11:117979429-117981429
+chr1:32991769-32993769
+chr15:64892705-64894705
+chr17:67292599-67294599
+chr11:59218097-59220097
+chr3:49344709-49346709
+chr20:49764338-49766338
+chr1:206747614-206749614
+chr19:46859727-46861727
+chr9:131251758-131253758
+chr7:2236470-2238470
+chr11:35072942-35074942
+chr6:89036310-89038310
+chr7:5569100-5571100
+chr15:64872222-64874222
+chr2:234307795-234309795
+chr3:105315286-105317286
+chr17:50624659-50626659
+chr3:50654094-50656094
+chr10:80143357-80145357
+chr1:32983757-32985757
+chr15:64894773-64896773
+chr6:159819699-159821699
+chr8:81290362-81292362
+chr1:160789205-160791205
+chr6:159118868-159120868
+chr6:149498675-149500675
+chr1:267003-269003
+chr6:113762499-113764499
+chr6:137956699-137958699
+chr21:25369591-25371591
+chr14:70886472-70888472
+chr6:159817431-159819431
+chr19:35912798-35914798
+chr20:62623253-62625253
+chr6:7085678-7087678
+chr20:23115443-23117443
+chr6:142701848-142703848
+chr6:43915098-43917098
+chr11:65491972-65493972
+chr20:23141851-23143851
+chr17:8369103-8371103
+chr5:140601728-140603728
+chr9:105006204-105008204
+chr11:61166568-61168568
+chr1:89080283-89082283
+chr16:72202082-72204082
+chr17:82216238-82218238
+chr19:40830919-40832919
+chr4:88658542-88660542
+chr15:99452084-99454084
+chr1:89085106-89087106
+chr9:71677251-71679251
+chr11:78800464-78802464
+chr12:92601688-92603688
+chr6:137728005-137730005
+chr3:119569427-119571427
+chr6:170004831-170006831
+chr5:60726406-60728406
+chr2:28359988-28361988
+chr5:136019907-136021907
+chr7:20596901-20598901
+chr6:137815133-137817133
+chr7:20476060-20478060
+chr11:5624279-5626279
+chr3:105351034-105353034
+chr5:148765700-148767700
+chr7:157301437-157303437
+chr6:27156969-27158969
+chr3:122313649-122315649
+chr12:92603202-92605202
+chrX:30734812-30736812
+chr8:1744978-1746978
+chr7:106344930-106346930
+chr10:44947524-44949524
+chr20:36883105-36885105
+chr3:153273019-153275019
+chr4:7649215-7651215
+chr7:30277946-30279946
+chr12:7511886-7513886
+chr1:206744034-206746034
+chr17:14453940-14455940
+chr6:170012899-170014899
+chr6:4357984-4359984
+chr2:229282181-229284181
+chr16:11538743-11540743
+chr19:2289238-2291238
+chr2:113082807-113084807
+chr15:70256760-70258760
+chr3:138872608-138874608
+chr2:229339345-229341345
+chr15:79977712-79979712
+chr12:108637582-108639582
+chr21:42079933-42081933
+chr11:102390166-102392166
+chr2:96485317-96487317
+chr11:69039951-69041951
+chr1:167714155-167716155
+chr2:144662414-144664414
+chr10:110491600-110493600
+chr15:99454130-99456130
+chr2:28358584-28360584
+chr6:159116257-159118257
+chr5:181216669-181218669
+chr6:37207118-37209118
+chr12:116443295-116445295
+chr15:74053223-74055223
+chr3:138875078-138877078
+chr19:54793695-54795695
+chr4:141207120-141209120
+chr3:37374705-37376705
+chr6:37032430-37034430
+chr11:35029526-35031526
+chr17:57045383-57047383
+chr2:219159626-219161626
+chr4:88612516-88614516
+chr8:131815554-131817554
+chr12:7542007-7544007
+chr16:57892369-57894369
+chr1:204397776-204399776
+chr11:65470742-65472742
+chr1:212487803-212489803
+chr6:30032497-30034497
+chr17:68232010-68234010
+chr6:7072922-7074922
+chr18:50829839-50831839
+chr3:49243877-49245877
+chr20:3710884-3712884
+chr3:46060524-46062524
+chr20:1802032-1804032
+chr3:138861822-138863822
+chr8:1735249-1737249
+chr15:41374059-41376059
+chr9:3741740-3743740
+chr7:156639640-156641640
+chr16:11531336-11533336
+chr19:54794974-54796974
+chr17:62967635-62969635
+chr3:46192631-46194631
+chr2:234289191-234291191
+chr6:30101645-30103645
+chr6:18472685-18474685
+chrX:109500527-109502527
+chr11:119509033-119511033
+chr19:18167344-18169344
+chr1:119612758-119614758
+chr1:244318748-244320748
+chr10:102444034-102446034
+chr3:138841530-138843530
+chr3:194571981-194573981
+chr16:14284892-14286892
+chr6:27478312-27480312
+chr2:68856786-68858786
+chr1:159798179-159800179
+chr17:7393564-7395564
+chr19:44687025-44689025
+chr17:8118478-8120478
+chr2:144700794-144702794
+chr9:127898167-127900167
+chr19:18160373-18162373
+chr6:26304273-26306273
+chr6:170048167-170050167
+chr20:62501034-62503034
+chr4:184313289-184315289
+chr9:115007750-115009750
+chr9:41357844-41359844
+chr11:35087234-35089234
+chr6:170046109-170048109
+chr9:87839550-87841550
+chr6:137810780-137812780
+chr2:69306228-69308228
+chr11:128883813-128885813
+chr5:139634907-139636907
+chr2:100751542-100753542
+chr1:211596617-211598617
+chr9:68974438-68976438
+chr1:110639212-110641212
+chr4:158913460-158915460
+chr19:54265326-54267326
+chr6:6799434-6801434
+chr6:6787581-6789581
+chr22:39002302-39004302
+chr11:5631082-5633082
+chr18:50841997-50843997
+chr17:75296586-75298586
+chr12:122973951-122975951
+chr2:55281272-55283272
+chr1:159820272-159822272
+chr7:36735750-36737750
+chr18:50835679-50837679
+chr6:26553103-26555103
+chr4:153713021-153715021
+chr19:54373726-54375726
+chr3:122298406-122300406
+chr16:8654294-8656294
+chr2:142865238-142867238
+chr9:127896446-127898446
+chr10:44945416-44947416
+chr17:42963631-42965631
+chr1:235907986-235909986
+chr8:58396329-58398329
+chr19:44684755-44686755
+chr6:18476728-18478728
+chr9:111952390-111954390
+chr9:66269248-66271248
+chr3:45075534-45077534
+chr1:160781224-160783224
+chr10:72295217-72297217
+chr3:153288557-153290557
+chr9:104992637-104994637
+chr10:3810489-3812489
+chr17:47315136-47317136
+chr11:35082330-35084330
+chr3:188904966-188906966
+chr5:157252210-157254210
+chr3:49237815-49239815
+chr9:114957480-114959480
+chr1:192608391-192610391
+chr7:66805-68805
+chr1:26676627-26678627
+chr7:155343951-155345951
+chr21:33363288-33365288
+chr9:751131-753131
+chr4:88629827-88631827
+chr1:244303374-244305374
+chr3:156534585-156536585
+chr20:50483237-50485237
+chr4:38785068-38787068
+chr1:65001130-65003130
+chr1:244322174-244324174
+chr11:65476412-65478412
+chr6:26571373-26573373
+chr6:30502627-30504627
+chr5:136011232-136013232
+chr6:163651419-163653419
+chr6:159838012-159840012
+chr2:151296998-151298998
+chr12:92551072-92553072
+chr12:92558139-92560139
+chr8:103077426-103079426
+chr3:156721314-156723314
+chr16:3151539-3153539
+chr3:5496714-5498714
+chr3:156825291-156827291
+chr13:94548495-94550495
+chr15:58517088-58519088
+chr11:75213529-75215529
+chr6:163404929-163406929
+chr2:74184883-74186883
+chr14:75257731-75259731
+chr17:68212649-68214649
+chr6:27686789-27688789
+chr9:92705702-92707702
+chr9:115006010-115008010
+chr1:110721883-110723883
+chr6:27791142-27793142
+chr2:227459396-227461396
+chr17:75294573-75296573
+chr22:30272471-30274471
+chr6:166258298-166260298
+chr6:27751966-27753966
+chr1:120414306-120416306
+chr6:30508251-30510251
+chr12:7554964-7556964
+chr1:211605982-211607982
+chr3:106018335-106020335
+chr3:106119135-106121135
+chr17:39152868-39154868
+chr1:212490658-212492658
+chr12:10406137-10408137
+chr10:31750449-31752449
+chr7:115910403-115912403
+chr9:68951396-68953396
+chr15:70269555-70271555
+chr3:132641416-132643416
+chr14:69718706-69720706
+chr9:6680322-6682322
+chr17:68236855-68238855
+chr3:46075804-46077804
+chr17:73142224-73144224
+chr4:73717815-73719815
+chr14:55107229-55109229
+chr4:88622204-88624204
+chr17:31548907-31550907
+chr6:30527179-30529179
+chr1:115827996-115829996
+chr10:69064794-69066794
+chr5:43007632-43009632
+chr11:47610756-47612756
+chr9:104990533-104992533
+chr2:119282359-119284359
+chr4:88591568-88593568
+chr3:156815860-156817860
+chr5:130034021-130036021
+chr6:30500050-30502050
+chr11:86140903-86142903
+chr5:151555919-151557919
+chr11:59549789-59551789
+chr11:85947377-85949377
+chr10:72296752-72298752
+chr22:22297210-22299210
+chr3:49427821-49429821
+chr8:54242200-54244200
+chr8:11887264-11889264
+chr17:76004817-76006817
+chr2:137920980-137922980
+chr12:49622470-49624470
+chr19:54611552-54613552
+chr4:52855882-52857882
+chr1:110643040-110645040
+chr2:113369701-113371701
+chr2:144659499-144661499
+chr9:105063382-105065382
+chr1:13645573-13647573
+chr8:54170901-54172901
+chr10:6362804-6364804
+chr17:62965124-62967124
+chr19:13850358-13852358
+chr19:13171738-13173738
+chr3:56692600-56694600
+chr15:72284939-72286939
+chr1:146036575-146038575
+chr19:15348179-15350179
+chr8:131813597-131815597
+chr2:231179125-231181125
+chr5:65034820-65036820
+chr14:20612410-20614410
+chr1:155569547-155571547
+chr16:57299105-57301105
+chr6:26531808-26533808
+chr6:6747724-6749724
+chr19:51218574-51220574
+chr4:73708671-73710671
+chr5:109423962-109425962
+chr7:20473460-20475460
+chr17:76514572-76516572
+chr6:159092538-159094538
+chr6:30528701-30530701
+chr10:67763394-67765394
+chr4:73723138-73725138
+chr6:44065009-44067009
+chr3:153246186-153248186
+chr1:116503392-116505392
+chr12:92569954-92571954
+chr12:92597179-92599179
+chr3:46097291-46099291
+chr6:30112314-30114314
+chr2:234334920-234336920
+chr9:128828832-128830832
+chr12:6322643-6324643
+chr10:3876374-3878374
+chr8:11890556-11892556
+chr4:74055858-74057858
+chr2:151337046-151339046
+chr14:74458690-74460690
+chr16:56599688-56601688
+chr18:59881421-59883421
+chr21:39093777-39095777
+chr4:73703910-73705910
+chr17:76465298-76467298
+chr1:234974383-234976383
+chrX:30642619-30644619
+chr14:34650228-34652228
+chr17:64419467-64421467
+chr4:176340157-176342157
+chr1:160989535-160991535
+chr8:54211492-54213492
+chr10:4119963-4121963
+chr11:59246906-59248906
+chr6:163660405-163662405
+chr17:64441520-64443520
+chr1:232619888-232621888
+chr10:62267579-62269579
+chr7:155205230-155207230
+chr3:113577199-113579199
+chr2:238097979-238099979
+chr6:30090814-30092814
+chr6:30129871-30131871
+chr3:49420519-49422519
+chr6:111290321-111292321
+chr14:20631472-20633472
+chr4:73726883-73728883
+chr7:42911045-42913045
+chr17:64417906-64419906
+chr2:112879819-112881819
+chr2:70141507-70143507
+chr2:84963390-84965390
+chr10:22436342-22438342
+chr21:33373432-33375432
+chr1:116507961-116509961
+chr3:113613608-113615608
+chr9:84367608-84369608
+chr10:47552359-47554359
+chr3:106003382-106005382
+chr3:45203846-45205846
+chr15:55497287-55499287
+chr14:61101159-61103159
+chr10:71860121-71862121
+chr11:62559750-62561750
+chr6:29796321-29798321
+chr9:91192678-91194678
+chr1:232599250-232601250
+chr19:54345337-54347337
+chrX:30532523-30534523
+chr1:206738751-206740751
+chr8:54165047-54167047
+chr9:117743850-117745850
+chr8:70539913-70541913
+chr1:26619928-26621928
+chr17:64430202-64432202
+chr10:62264095-62266095
+chr8:54169202-54171202
+chr4:73734094-73736094
+chr14:34648596-34650596
+chr16:11640013-11642013
+chr3:126982033-126984033
+chr9:84364078-84366078
+chr6:44063648-44065648
+chr21:33393121-33395121
+chr3:134600011-134602011
+chr20:37269582-37271582
+chr15:70233729-70235729
+chr3:106013304-106015304
+chr16:31396407-31398407
+chr8:134831195-134833195
+chr12:88388034-88390034
+chr3:5578686-5580686
+chr6:15065935-15067935
+chr20:20007743-20009743
+chr13:30673109-30675109
+chr4:73728737-73730737
+chr2:144606388-144608388
+chr16:22605947-22607947
+chr6:14711259-14713259
+chr16:31394851-31396851
+chr17:45591529-45593529
+chr2:241862716-241864716
+chr14:34645317-34647317
+chr10:72327524-72329524
+chr1:110523834-110525834
+chr1:110645126-110647126
+chr6:105965681-105967681
+chr18:59884995-59886995
+chr14:20623735-20625735
+chr17:75999602-76001602
+chr17:46259365-46261365
+chr12:92503208-92505208
+chr8:103392788-103394788
+chr15:70307614-70309614
+chr2:216394114-216396114
+chr16:9126881-9128881
+chr4:73731232-73733232
+chr7:97927362-97929362
+chr12:124938848-124940848
+chr10:3804134-3806134
+chr11:65813661-65815661
+chr4:151116322-151118322
+chr21:8232591-8234591
+chr3:171564298-171566298
+chr4:81420632-81422632
+chr2:9800676-9802676
+chr21:8459760-8461760
+chr9:84356671-84358671
+chr15:70280899-70282899
+chr3:194577187-194579187
+chr20:53828336-53830336
+chr1:109820947-109822947
+chr14:105069489-105071489
+chr17:75311369-75313369
+chr3:46088995-46090995
+chr6:14734152-14736152
+chr7:102571656-102573656
+chr1:232624049-232626049
+chr15:70339229-70341229
+chr2:144692219-144694219
+chr8:55843675-55845675
+chr10:133012393-133014393
+chr8:8921203-8923203
+chr19:48949271-48951271
+chr1:110522123-110524123
+chr22:30270083-30272083
+chr9:22029317-22031317
+chr5:130031969-130033969
+chr7:20541222-20543222
+chr1:110646799-110648799
+chr2:98739657-98741657
+chr14:52307084-52309084
+chr17:78646242-78648242
+chr8:29582936-29584936
+chr4:184345630-184347630
+chr6:31821044-31823044
+chr16:56590881-56592881
+chr4:48035821-48037821
+chr20:37275987-37277987
+chr2:85498208-85500208
+chr7:47668795-47670795
+chr17:43367753-43369753
+chr10:22245850-22247850
+chr6:29847372-29849372
+chr6:29849355-29851355
+chr9:36730698-36732698
+chr12:92593040-92595040
+chr16:53509566-53511566
+chr17:31564037-31566037
+chr19:4562711-4564711
+chr6:14143557-14145557
+chr13:44917326-44919326
+chr12:7965787-7967787
+chr19:19169384-19171384
+chrX:52852171-52854171
+chr1:234840676-234842676
+chr17:34218127-34220127
+chr17:29211775-29213775
+chr15:31440112-31442112
+chr3:187772962-187774962
+chr17:47789088-47791088
+chr12:69340451-69342451
+chr3:105997198-105999198
+chr22:42374965-42376965
+chr14:92506413-92508413
+chr4:73707096-73709096
+chr17:7522250-7524250
+chr2:142819708-142821708
+chr20:36968263-36970263
+chr9:21323143-21325143
+chr6:14727091-14729091
+chr8:133918442-133920442
+chr17:34234921-34236921
+chr7:150780001-150782001
+chr20:1882480-1884480
+chr20:1944594-1946594
+chr1:110554663-110556663
+chr3:194574509-194576509
+chr14:95495500-95497500
+chr10:3835193-3837193
+chr19:44741355-44743355
+chr3:153143972-153145972
+chr20:37274272-37276272
+chr3:153137585-153139585
+chr14:95482348-95484348
+chr9:35050511-35052511
+chr3:194569446-194571446
+chr11:115706295-115708295
+chr12:69329961-69331961
+chr15:72319022-72321022
+chr4:73763722-73765722
+chr6:163585083-163587083
+chr9:72280184-72282184
+chr21:33214980-33216980
+chr7:151922554-151924554
+chr6:29813254-29815254
+chr11:65026535-65028535
+chr15:70347976-70349976
+chr7:151925030-151927030
+chr14:34722240-34724240
+chr17:75996154-75998154
+chr6:32678817-32680817
+chr1:54651412-54653412
+chr19:42400964-42402964
+chr6:134631446-134633446
+chr8:30666016-30668016
+chr12:69324152-69326152
+chr21:33203143-33205143
+chr4:73725101-73727101
+chr16:31349413-31351413
+chr11:65486842-65488842
+chr4:73775344-73777344
+chr9:114655007-114657007
+chr1:31101613-31103613
+chr19:13846208-13848208
+chr3:46111462-46113462
+chr12:69290045-69292045
+chr3:52298955-52300955
+chr6:3162103-3164103
+chr11:65817292-65819292
+chr3:160125025-160127025
+chr17:34222003-34224003
+chr2:144670414-144672414
+chr3:153150080-153152080
+chr19:11418214-11420214
+chr21:33201784-33203784
+chr13:49641589-49643589
+chr3:12232244-12234244
+chr5:181206126-181208126
+chr8:11885300-11887300
+chr12:55846962-55848962
+chr5:42950064-42952064
+chr10:71888631-71890631
+chr10:62258237-62260237
+chr8:23760861-23762861
+chr4:73761689-73763689
+chr7:24762471-24764471
+chr1:248872651-248874651
+chr17:43314821-43316821
+chr3:153209444-153211444
+chr21:33198992-33200992
+chr17:78441878-78443878
+chr2:231181195-231183195
+chr1:234842123-234844123
+chr1:44818968-44820968
+chr14:95506618-95508618
+chr17:46234844-46236844
+chr12:7970303-7972303
+chr6:29964679-29966679
+chrX:39761451-39763451
+chrX:39771567-39773567
+chr4:138391819-138393819
+chr4:138405237-138407237
+chr2:37634972-37636972
+chrX:39754931-39756931
+chrX:39773679-39775679
+chr9:114652476-114654476
+chr10:69047476-69049476
+chr13:113273162-113275162
+chr3:12147260-12149260
+chr3:15360372-15362372
+chr1:32997084-32999084
+chr14:22852399-22854399
+chr16:31343977-31345977
+chr8:54190950-54192950
+chr2:12168728-12170728
+chr6:29908889-29910889
+chr1:201599302-201601302
+chr11:104693747-104695747
+chr4:73721014-73723014
+chr3:52302880-52304880
+chr1:201613283-201615283
+chr21:33197709-33199709
+chr3:69982557-69984557
+chr9:70418877-70420877
+chr17:34248157-34250157
+chr1:13641902-13643902
+chr14:95479420-95481420
+chr20:40497353-40499353
+chr1:204506082-204508082
+chr10:61396735-61398735
+chr2:42809317-42811317
+chr11:59272364-59274364
+chr8:89891751-89893751
+chr1:232629382-232631382
+chr1:1354444-1356444
+chr6:29776565-29778565
+chr2:26144024-26146024
+chr1:161611487-161613487
+chr2:121074065-121076065
+chr1:144545540-144547540
+chr6:14731915-14733915
+chr1:155940248-155942248
+chr3:12221972-12223972
+chr10:6381263-6383263
+chr14:95500301-95502301
+chr11:61027836-61029836
+chr4:54004684-54006684
+chr14:49907038-49909038
+chr19:11421003-11423003
+chr11:76689815-76691815
+chr2:227406483-227408483
+chr1:110507448-110509448
+chr7:26102770-26104770
+chr3:113625306-113627306
+chr10:3850929-3852929
+chr17:74554278-74556278
+chr3:12138434-12140434
+chr8:54161006-54163006
+chr14:75340473-75342473
+chr3:148790119-148792119
+chr10:62243250-62245250
+chr6:30356924-30358924
+chr11:62024517-62026517
+chr14:49879348-49881348
+chr14:49882011-49884011
+chr5:54645661-54647661
+chr6:159061852-159063852
+chr6:14148140-14150140
+chr19:48880302-48882302
+chr4:38751398-38753398
+chr8:100907722-100909722
+chr17:75300425-75302425
+chr4:153740692-153742692
+chr1:201592553-201594553
+chr7:157278502-157280502
+chr8:11877135-11879135
+chr14:61103101-61105101
+chr2:144672661-144674661
+chr1:87203234-87205234
+chr7:150777754-150779754
+';
+%>
+
+<div class="container">
+	<div class="jumbotron">
+	
+		<div class="text-center">
+			% if(1){
+				<a class="btn btn-primary btn active" role="button" href="/XGRm/RElyser"><i class="fa fa-meetup fa-lg fa-flip-horizontal"></i>&nbsp;&nbsp;<strong>RElyser</strong>: <b>R</b>egion-centric <b>E</b>nrichment ana<b>lyser</b></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:newWin('/app/examples/_tmp_RMD_RElyser.html', 'Example', '909', '1169')"><i class="fa fa-key fa-lg" aria-hidden="true"></i>&nbsp;Example</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="javascript:newWin('/XGRmbooklet/relyser.html', 'XGRmbooklet', '909', '1169')"><span class="fa fa-book fa-lg fa-flip-horizontal"></span>&nbsp;Manual</a>&nbsp;&nbsp;&nbsp;
+			% }
+		</div>
+
+	</div>
+</div>
+
+<!-- error text -->
+<div id="error-container" class="container collapse">
+	<div id="errorText" style="display: block">
+		<p class="text_justify">
+		
+<h5>Error Messages: your input at Step 1</h5>
+<ul>
+<li>Please check your input genomic regions formatted as (<b>chromosome:start-end</b>); otherwise, they will be disregarded.
+<li>Before clicking the <strong>SUBMIT</strong> button, please paste your own data at Step 1 <strong>EVERY TIME</strong>. Note that the text box at Step 1 is pre-filled with the provided example when the interface page is first-visited or refreshed.
+<li>If the above issues are resolved, and you still receive the error messages, it simply means that <strong>no enrichment has been returned</strong>.
+</ul>
+
+		</p>
+	</div>
+</div>
+
+<hr>
+	
+<!-- progress bar -->
+<div id="progress-container" class="container collapse">
+	<div class="progress progress-striped active">
+		<div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+			<i class="fa fa-cog fa-spin fa-lg"></i>&nbsp;&nbsp;RElyser is analysing your genomic region list ...
+		</div>
+	</div>
+</div>
+
+
+<!-- form -->
+<div id="form-container" class="container collapse in">
+	
+	<a id="displayText" href="javascript:toggle();" class="btn btn-primary btn-sm active">Show Info</a>
+	
+	<div id="toggleText" style="display: none">
+		<p class="text_justify">
+			<%== $info %>
+		</p>
+	</div>
+	
+	<div class="row">
+		<div class="col-lg-12">
+			
+			<form id="submit-form" class="form-horizontal" enctype="multipart/form-data" method="POST">
+				
+				<p><i><strong>Step 1</strong></i>:&nbsp;&nbsp;Paste your genomic regions (<i><u>chr:start-end</u></i> based on <i><u>GRCm38/mm10</u></i>; see<a href="/app/examples/eg_RElyser.txt" download="/app/examples/eg_RElyser.txt" target="/app/examples/eg_RElyser.txt"></i>&nbspExample Input</a>).&nbsp;<strong class="my-tooltip" data-toggle="tooltip" data-placement="auto right" title="After clicking on the text area, the pre-filled example will disappear, leaving the text box ready for the user to input their own data."><i class="fa fa-info-circle fa-1x"></i></strong></p>
+				<div class="form-group">
+					<div class="col-sm-12">
+						<textarea id="regionlist" name="regionlist" class="form-control table" rows="4" required="required" onfocus="clearFieldFirstTime(this);"><%== $example_regions %></textarea>
+					</div>
+				</div>
+				
+				<p><i><strong>Step 2</strong></i>:&nbsp;&nbsp;Identify linked genes based on genomic proximity or enhancer-promoter datasets.</p>
+				<div class="form-group">
+					<label class="control-label col-sm-5" for="distance">Linked genes supported by:</label>
+					<div class="col-sm-7">
+						<select name="crosslink" id="crosslink" class="form-control">
+							% foreach my $crosslink (sort{$crosslink_order->{$a} <=> $crosslink_order->{$b}} keys %$crosslink_order) {
+							% my $selected = ($crosslink eq $default_crosslink)? ' SELECTED':'';
+							% if ($crosslink eq 'proximity_1000'){
+								<OPTGROUP LABEL="Genomic proximity (distance window)">
+								<OPTION VALUE="<%= $crosslink %>"<%= $selected %>><%== $crosslinks->{$crosslink} %></OPTION>
+							% }elsif ($crosslink eq 'RGBmm_EP_PMID32728240'){
+								</OPTGROUP>
+								<OPTGROUP LABEL="Enhancer-promoter datasets">
+								<OPTION VALUE="<%= $crosslink %>"<%= $selected %>><%== $crosslinks->{$crosslink} %></OPTION>
+								</OPTGROUP>
+							% }else{
+								<OPTION VALUE="<%= $crosslink %>"<%= $selected %>><%== $crosslinks->{$crosslink} %></OPTION>
+							% }
+							%}
+						</select>
+					</div>
+				</div>
+
+				<p><i><strong>Step 3</strong></i>:&nbsp;&nbsp;Choose which ontology to use.</p>
+				<div class="form-group">
+					<label class="control-label col-sm-5" for="obo">Ontology:</label>
+					<div class="col-sm-7">
+						<select name="obo" id="obo" class="form-control">
+							% foreach my $obo (sort{$obo_order->{$a} <=> $obo_order->{$b}} keys %$obo_order) {
+							% my $selected = ($obo eq $default_obo)? ' SELECTED':'';
+							% if ($obo eq 'GOBP'){
+								<OPTGROUP LABEL="Gene Ontology (GO)">
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+							% }elsif ($obo eq 'KEGG'){
+								</OPTGROUP>
+								<OPTGROUP LABEL="KEGG Pathways">
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+							% }elsif ($obo eq 'MP'){
+								</OPTGROUP>
+								<OPTGROUP LABEL="Phenotypes">
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+							% }elsif ($obo eq 'MDODD'){
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+								</OPTGROUP>
+							% }else{
+								<OPTION VALUE="<%= $obo %>"<%= $selected %>><%== $obos->{$obo} %></OPTION>
+							% }
+							%}
+						</select>
+					</div>
+				</div>
+				
+				<!-- Advanced begin ################### -->
+				<div class="form-group" id="advanced-toggle">
+					<div class="col-md-12">
+						 
+						<button type="button" class="btn btn-default btn-block btn-sm" style="text-align:left" data-toggle="collapse" data-target="#more-options">
+							<i class="fa fa-chevron-circle-down fa-lg"></i> <strong class="my-tooltip" data-toggle="tooltip" data-placement="auto right" title="Specify additional parameters for more controls">&nbsp;More Controls</strong></a>
+						</button>
+						
+						<br>
+						
+						<div id="more-options" class="row collapse">
+							<div class="col-md-12" style="border: 1px solid #fff">
+
+								<!-- min overlap -->
+								<i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;Minimum number of overlapped genes.
+								<div class="form-group">
+									<label class="control-label col-sm-5">Number of genes:</label>
+									<div class="col-sm-7">
+										<select name="min_overlap" class="form-control">
+											<option value="3" selected>3</a>
+											<option value="5">5</a>
+										</select>
+									</div>			
+								</div>
+
+								<!-- FDR cutoff -->
+								<i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;Term significance.
+								<div class="form-group">
+									<label class="control-label col-sm-5">False Discovery Rate (FDR):</label>
+									<div class="col-sm-7">
+										<select name="FDR_cutoff" class="form-control">
+											<option value="5e-2">5e-2</a>
+											<option value="1e-2">1e-2</a>
+											<option value="NULL" selected>None</a>
+										</select>
+									</div>									
+								</div>
+								
+							</div>
+						</div>
+
+						
+					</div>
+				</div>
+				<!-- Advanced end ################### -->
+				
+				<!-- Button -->
+				<div class="form-group">
+					<label class="col-md-12 control-label" for="submit"></label>
+					<div class="col-md-12">
+						<input class="btn btn-primary btn-block btn-sm active" id="submit" type="submit" value="SUBMIT" />
+					</div>
+				</div>
+				
+			</form>
+			
+		</div>
+		
+	</div>
+	
+</div>
+
+
+<div id="results-container" class="container collapse">
+
+	<div class="row">
+		<div class="col-lg-12">
+			<h3 class="my-fontfamily">RElyser Results&nbsp;<a class="btn btn-danger btn-sm active" role="button" href="javascript:newWin('<%= $ajax_rmd_html_file %>', 'ZOOM', '909', '1169')"><i class="fa fa-search-plus fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;ZOOM</a>&nbsp;<a class="btn btn-danger btn-sm active" role="button" href="<%= $ajax_rmd_html_file %>" download="<%= $ajax_rmd_html_file %>" target="<%= $ajax_rmd_html_file %>"><i class="fa fa-cloud-download fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;DOWNLOAD</a></h3>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="form-group">
+			<div class="col-lg-12">
+				<div class="embed-responsive embed-responsive-4by3">
+					<iframe class="embed-responsive-item" src="<%= $ajax_rmd_html_file %>"></iframe>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+  	
+</div>
+

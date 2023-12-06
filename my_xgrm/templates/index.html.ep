@@ -1,0 +1,210 @@
+% layout 'default', tab => 'home';
+% title 'XGRm - Home';
+
+% content_for css => begin
+	<style>
+
+		.coin-container .coin1 {
+			-webkit-transition: 1s;
+			-moz-transition: 1s;
+			-o-transition: 1s;
+			transition: 1s;
+		}
+		.coin-container:hover .coin1 {
+			-webkit-transform: rotateY(360deg);
+			-moz-transform: rotateX(360deg) rotateY(360deg);
+			-o-transform: rotateX(360deg) rotateY(360deg);
+			transform: rotateY(360deg);
+		}
+		
+		.typeahead, .tt-query, .tt-hint {
+			width: 650px;
+			line-height: 50px;
+		}
+		
+	</style>
+	
+% end
+
+% content_for scripts => begin
+	<script type="text/javascript">
+		$(document).ready(function(){
+			
+			$('.truncated').hide()                    // Hide the text initially
+				.after('<i class="fa fa-plus-circle fa-lg"></i>') // Create toggle button
+				.next().on('click', function(){          // Attach behavior
+					$(this).toggleClass('fa-minus-circle')   // Swap the icon
+					.prev().toggle();                    // Hide/show the text
+				});
+			//////////////////////////////////////////////////////////////////////////////
+			// typeahead
+			var task = new Bloodhound({
+			  	datumTokenizer: Bloodhound.tokenizers.obj.whitespace("id","name","description"),
+			  	queryTokenizer: Bloodhound.tokenizers.whitespace,
+			  	local: <%== $json_task %>
+			});
+			
+			$('#multiple-datasets .typeahead').typeahead({
+			  	hint: true,
+			  	highlight: true,
+			  	minLength: 1
+			},
+			{
+			  	name: 'task',
+			  	source: task,
+			  	limit: 10,
+			  	templates: {
+					header: '<div class="header-name">XGR+ Analysers:</div>',
+					suggestion: function(data) {
+							return ['<a href="/XGRplus/' + data.id + '" class="btn btn-link btn-block text-left">',
+							'<i class="fa fa-link fa-1x"></i>&nbsp;' + data.name + ': ' + data.description.split(" ").slice(0,10).join(" ") + ' ...</a>',
+						  ].join('\n');
+            		}
+            	}
+			}
+			);
+			
+		});
+	</script>
+% end
+
+<%
+%>
+
+
+<div class="jumbotron0">
+
+    <!-- Projects Row -->
+    <div class="row">
+        <div class="col-md-12 img-portfolio text-center">
+        	<a href="/XGRm/howto" target="_blank"><img src="/app/img/XGRm.logo.png" height="90px"></a>
+        </div>
+    	
+    	<div class="text-center">
+        	<h1 style="color:#000; font-weight:bold; font-size:24px; margin:5px;">
+        	eXploring Genomic Relations&nbsp;<span class="my-fontfamily">(Model Organisms)</span>
+			</h1>
+        </div>
+    </div>
+    <!-- /.row -->
+    
+	<hr>
+	
+    <!-- Content Row -->
+    <div class="row">
+    
+    	<div class="col-sm-3 img-portfolio text-center">
+        	<div class="panel panel-default">
+            	<div class="panel-heading">
+                	<h4 style="margin:0;"><a class="btn btn-primary btn-block btn-lg active" role="button" href="/XGRm/GElyser"><i class="fa fa-meetup fa-lg  fa-flip-horizontal" aria-hidden="true"></i>&nbsp;&nbsp;<strong>GElyser</strong></a></h4>
+                </div>
+                <div class="panel-body">
+                	<span class="truncated">
+                		<br>
+						<strong>GElyser</strong> performs gene-centric ontology enrichment analysis.
+						<br>
+                	</span>
+                	<p class="help-block" style="font-size:16px; margin:0; color:#8c1e72;"><b>G</b>ene-centric <b>E</b>nrichment ana<b>lyser</b></p>
+                	
+                </div>
+            </div>
+        </div>
+
+    	<div class="col-sm-3 img-portfolio text-center">
+        	<div class="panel panel-default">
+            	<div class="panel-heading">
+                	<h4 style="margin:0;"><a class="btn btn-primary btn-block btn-lg active" role="button" href="/XGRm/RElyser"><i class="fa fa-meetup fa-lg fa-flip-horizontal" aria-hidden="true"></i>&nbsp;&nbsp;<strong>RElyser</strong></a></h4>
+                </div>
+                <div class="panel-body">
+                	<span class="truncated">
+                		<br>
+						<strong>RElyser</strong> first identifies genes linked from input genomic regions using functional genomic datasets about PCHi-C and enhancer-gene maps and then conducts ontology enrichment analysis based on the linked genes.
+						<br>
+                	</span>
+					<p class="help-block" style="font-size:16px; margin:0; color:#8c1e72;"><b>R</b>egion-centric <b>E</b>nrichment ana<b>lyser</b></p>
+					
+                </div>
+            </div>
+        </div>
+    
+    	<div class="col-sm-3 img-portfolio text-center">
+        	<div class="panel panel-default">
+            	<div class="panel-heading">
+                	<h4 style="margin:0;"><a class="btn btn-primary btn-block btn-lg active" role="button" href="/XGRm/GSlyser"><i class="fa fa-meetup fa-lg fa-flip-horizontal" aria-hidden="true"></i>&nbsp;&nbsp;<strong>GSlyser</strong></a></h4>
+                </div>
+                <div class="panel-body">
+                	<span class="truncated">
+                		<br>
+						<strong>GSlyser</strong> takes as input gene-level summary data to identify a subset of the gene network in a manner that the resulting subnetwork contains a desired number of highly scored and interconnected genes.
+						<br>
+                	</span>
+                	<p class="help-block" style="font-size:16px; margin:0; color:#8c1e72;"><b>G</b>ene-centric <b>S</b>ubnetwork ana<b>lyser</b></p>
+
+                </div>
+            </div>
+        </div>
+        
+    	<div class="col-sm-3 img-portfolio text-center">
+        	<div class="panel panel-default">
+            	<div class="panel-heading">
+                	<h4 style="margin:0;"><a class="btn btn-primary btn-block btn-lg active" role="button" href="/XGRm/RSlyser"><i class="fa fa-meetup fa-lg fa-flip-horizontal" aria-hidden="true"></i>&nbsp;&nbsp;<strong>RSlyser</strong></a></h4>
+                </div>
+                <div class="panel-body">
+                	<span class="truncated">
+                		<br>
+						<strong>RSlyser</strong> first identifies genes linked from input genomic regions using PCHi-C datasets or enhancer-gene maps, followed by subnetwork analysis based on the linked genes.
+						<br>
+                	</span>
+					<p class="help-block" style="font-size:16px; margin:0; color:#8c1e72;"><b>R</b>egion-centric <b>S</b>ubnetwork ana<b>lyser</b></p>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+	
+    <!-- Content Row -->
+    <div class="row">
+    
+    	<div class="col-sm-12 img-portfolio">
+		   	<!-- panel 1 -->
+		   	<div class="panel panel-default" id="panel1">
+			  	<div class="panel-heading">
+				 	<h4 class="panel-title" id="bookmark1">
+						<a id="advanced-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+					   	<i class="fa fa-plus-circle fa-lg"></i>&nbsp;&nbsp;<i class="fa fa-newspaper-o fa-lg fa-flip-horizontal"></i><strong>&nbsp;&nbsp;NEWS</strong></a>
+						</a>
+				 	</h4>
+			  	</div>
+		  
+			  	<div id="collapse1" class="panel-collapse collapse">
+					<ul>
+	
+					<fieldset>
+						<h5 class="about_title"><i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;<b>Saturday, September 2, 2023</b></h5>
+						<p>Its icon and logo officially finalised</p>
+					</fieldset>
+					<br>
+					
+					<fieldset>
+						<h5 class="about_title"><i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;<b>Thursday, August 31, 2023</b></h5>
+						<p>Its web server (the mouse) launched</p>
+					</fieldset>
+					<br>
+			
+					<fieldset>
+						<h5 class="about_title"><i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;<b>Saturday, August 19, 2023</b></h5>
+						<p>The project 'XGR-model' discussed</p>
+					</fieldset>
+			
+					<br>
+					</ul>
+			  	</div>
+		   	</div>
+        </div>
+
+    </div>
+
+</div>
+

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<!-- start html -->
+<html>
+	
+	<!-- start head -->
+	<head>
+
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<meta name="description" content="XGRm - Webserver">
+		<meta name="description1" content="eXploring Genomic Relations for Model Organism">
+		<meta name="author" content="Hai Fang">
+		<link rel="icon" href="/app/img/XGRm.icon.png">
+
+		<!-- CSS for Bootstrap -->
+		<link rel="stylesheet" type="text/css" href="/dep/bootstrap/bootstrap.min.css">
+		<!--
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		-->
+
+		<!-- CSS for Font Awesome -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<!--
+		<link rel="stylesheet" href="/dep/fontawesome/font-awesome.min.css">
+		-->
+
+		
+    	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug 
+    	<link href="http://getbootstrap.com/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    	-->
+		
+		<!-- CSS for DataTables -->
+		<link rel="stylesheet" type="text/css" href="/dep/dataTables/datatables.min.css">
+		<!--
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-html5-2.2.3/datatables.min.css"/>
+		-->
+		
+		<!-- CSS for Select2 -->
+		<link rel="stylesheet" type="text/css" href="/dep/Select2/select2.min.css">
+		<!--
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css">
+		-->
+
+		<!-- CSS for bootstrap-toggle -->
+		<link rel="stylesheet" type="text/css" href="/dep/bootstraptoggle/bootstrap-toggle.min.css">
+		<!--
+		<link rel="stylesheet" type="text/css" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css">
+		-->
+		
+		<!-- CSS for bootstrap-select -->
+		<link rel="stylesheet" type="text/css" href="/dep/bootstrapselect/bootstrap-select.min.css">
+		<!--
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+		-->
+		
+		<!-- CSS for tabber -->
+		<link rel="stylesheet" href="/dep/tabber/tabber_dcGO.css" TYPE="text/css" MEDIA="screen">
+		
+		<!-- Custom styles for this template -->
+		<link rel="stylesheet" type="text/css" href="/app/css/XGRm.css">
+
+		<%= content_for 'css' %>
+
+		<title><%= title %></title>
+
+		
+	<!-- end head -->
+	</head>
+
+	<!-- start body -->
+	<body role="document">
+
+		<!-- Fixed navbar -->
+		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		  <div class="container">
+		  
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </button>
+			  
+			  <a class="navbar-brand" class="btn btn-link btn-md active" role="button" href="/XGRm" title="WELCOME TO XGR-model">Home</a>
+			  
+		   </div>
+			
+			<div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
+			  <ul class="nav navbar-nav navbar-right">
+				
+				<li class="dropdown<%== ($tab=~/xgrm/i)? ' active':'' %>">
+				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="fa fa-bars fa-lg"></span>&nbsp;&nbsp;<strong>Menu</strong>&nbsp;<b class="caret"></b></a>
+				  <ul class="dropdown-menu">
+						
+						<li class="dropdown-header"><h4 class="my-fontfamily">ANALYSER</h4></li>
+						
+						<li <%== ($tab=~/XGRm\/GElyser/i)? 'class="active"':'' %>>
+							<a href="/XGRm/GElyser" class="my-tooltip" data-toggle="tooltip" data-placement="auto bottom" title="Enrichment analysis for genes using ontologies"><i class="fa fa-meetup fa-lg fa-flip-horizontal"></i>&nbsp;&nbsp;&nbsp;GElyser</a>
+						</li>
+				  		
+				  		<br>
+				  		
+						<li <%== ($tab=~/XGRm\/RElyser/i)? 'class="active"':'' %>>
+							<a href="/XGRm/RElyser" class="my-tooltip" data-toggle="tooltip" data-placement="auto bottom" title="Genomic regions linked to genes for enrichment analysis"><i class="fa fa-meetup fa-lg fa-flip-horizontal"></i>&nbsp;&nbsp;&nbsp;RElyser</a>
+						</li>
+						
+						<br>
+						
+						<li <%== ($tab=~/XGRm\/GSlyser/i)? 'class="active"':'' %>>
+							<a href="/XGRm/GSlyser" class="my-tooltip" data-toggle="tooltip" data-placement="auto bottom" title="Subnetwork analysis for gene-level summary data"><i class="fa fa-meetup fa-lg fa-flip-horizontal"></i>&nbsp;&nbsp;&nbsp;GSlyser</a>
+						</li>
+				  		
+				  		<br>
+				  		
+						<li <%== ($tab=~/XGRm\/RSlyser/i)? 'class="active"':'' %>>
+							<a href="/XGRm/RSlyser" class="my-tooltip" data-toggle="tooltip" data-placement="auto bottom" title="Genomic regions linked to genes for subnetwork analysis"><i class="fa fa-meetup fa-lg fa-flip-horizontal"></i>&nbsp;&nbsp;&nbsp;RSlyser</a>
+						</li>
+						
+						<br>
+						
+						<li role="separator" class="divider"></li>
+				
+				  		<li class="dropdown-header"><h4 class="my-fontfamily">HOWTO</h4></li>
+				  		
+						<li <%== ($tab=~/XGRm\/howto/i)? 'class="active"':'' %>>
+							<a href="/XGRm/howto" class="my-tooltip" data-toggle="tooltip" data-placement="auto bottom" title="Providing the information about XGR-model"><i class="fa fa-street-view fa-lg"></i>&nbsp;&nbsp;&nbsp;About</a>
+						</li>
+				  		
+				  		<br>
+				  		
+				  		<!--
+				  		<li>
+				  		<a href="https://github.com/hfang-bristol/XGRm-site" class="my-tooltip" data-toggle="tooltip" data-placement="auto bottom" title="Providing the source code for XGR-model" target="github"><i class="fa fa-github fa-lg"></i>&nbsp;&nbsp;&nbsp;Code</a>
+				  		</li>
+				  		
+				  		<br>
+				  		-->
+				  		
+				  		<li>
+				  		<a href="/XGRmbooklet/index.html" class="my-tooltip" data-toggle="tooltip" data-placement="auto bottom" title="Providing the user manual for XGR-model" target="manual"><i class="fa fa-book fa-lg fa-flip-horizontal"></i>&nbsp;&nbsp;&nbsp;Manual</a>
+				  		</li>
+				  		
+				  		<br>
+				
+				  </ul>
+				</li>
+				
+			  </ul>
+			  
+			</div><!--/.nav-collapse -->
+			
+		  </div>
+		</nav>
+	
+		<div id="alert-container"></div>
+		
+		<%= content_for 'modals' %>
+		
+		<!-- start container theme-showcase -->
+		<div class="container theme-showcase" role="main">
+			<%= content %>
+			
+		  	<hr>
+		  	
+		  	<footer class="text-center">
+				2023 &copy; <a href="/XGRm/howto"><strong>XGR-model</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;A Web Server for eXploring Genomic Relations in Model Organisms (Currently mouse)&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:newWin('/XGRmbooklet/index.html', 'XGRmbooklet', '909', '1169')"><span class="fa fa-book fa-1x fa-flip-horizontal"></span>&nbsp;Manual</a>&nbsp;&nbsp;|&nbsp;&nbsp;Contact&nbsp;<a href="mailto:fh12355@rjh.com.cn">(<i class="fa fa-envelope-o"></i>)</a>
+		  	</footer>
+		  	
+		<!-- end container theme-showcase -->
+		</div>
+		
+		<!-- JavaScript Placed at the end of the document so the pages load faster -->
+		
+		<!-- JS for ClustrMaps Map Widget 
+		<script type="text/javascript" id="clustrmaps" src="//clustrmaps.com/map_v2.js?d=kHn3vvYpma-yRXHJ3bGFqbkZaEutu0U6D_FTr2W5sn8&co=ffffff&cl=000000&cmo=e74c3c&cmn=e74c3c&ct=e74c3c&w=250&t=t"></script>
+		-->
+		
+		<!-- JS for jQuery -->
+		<script type="text/javascript" src="/dep/jquery/jquery.min.js"></script>
+		<!--
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>		
+		-->
+		
+		<!-- JS for Bootstrap -->
+		<script type="text/javascript" src="/dep/bootstrap/bootstrap.min.js"></script>
+		<!--
+		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		-->
+
+
+		<!-- JS for DataTables -->
+		<script type="text/javascript" src="/dep/dataTables/datatables.min.js"></script>
+		<!--
+		<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-html5-2.2.3/datatables.min.js"></script>
+		-->
+	
+		
+		<!-- JS for Select2 -->
+		<script type="text/javascript" src="/dep/Select2/select2.min.js"></script>
+		<!--
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+		-->
+		
+		<script type="text/javascript">
+  			//$('select').select2();
+  			
+  			$("[data-toggle='tooltip']").tooltip();
+  			$('.tooltip-show').tooltip('show');
+  			
+  			$("[data-toggle='popover']").popover({trigger: "hover"});
+  			
+			// For progress container
+			$('#submit-form').submit(function() {
+				// disable submit
+				$(this).find('input[type=submit]').prop('disabled', true);
+				
+				// show progress
+				$("#progress-container").addClass("in");
+			});
+			
+			// Warning button
+			function toggle() {
+				var ele  = document.getElementById("toggleText");
+				var text = document.getElementById("displayText");
+
+				if(ele.style.display == "block") {
+					ele.style.display = "none";
+					text.innerHTML    = "Show Info";
+				}else {
+					ele.style.display = "block";
+					text.innerHTML    = "Hide Info";
+				}
+			}
+			
+			// new windows			
+			function newWin(url, name, width, height) { 
+				var left = (screen.width/2)-(width/2);
+				var top = (screen.height/2)-(height/2);
+				window.open(url,name,'scrollbars=yes,resizable=yes,fullscreen=yes, width=' + width + ', height='+height+', top='+top+', left='+left);
+			}
+			
+			// clear the field for textarea
+			// By default, the text box is pre-filled with the provided example (by default) when the interface page is first-visited or refreshed.
+			// When the focus is set to the text box for the first time
+			// When the user clicks on any text area within the box for the first time, the filled example disappears, and the text box is ready to receive user-input contents.
+			function clearFieldFirstTime(element) {
+  				if(element.counter==undefined) {
+					element.counter = 1;
+  				}else {
+					element.counter++;
+  				}
+  				if(element.counter == 1) {
+					element.value = '';
+  				}
+			}
+	
+			// Advanced button
+			$('#advanced-toggle').on('shown.bs.collapse', function () {
+			   $("#advanced-toggle button .fa").removeClass("fa-chevron-circle-down").addClass("fa-chevron-circle-up");
+			});
+			$('#advanced-toggle').on('hidden.bs.collapse', function () {
+			   $("#advanced-toggle button .fa").removeClass("fa-chevron-circle-up").addClass("fa-chevron-circle-down");
+			});
+			
+			// Resulting panel1 button
+			$('#panel1').on('shown.bs.collapse', function () {
+			   $("#panel1 #bookmark1 .fa").removeClass("fa-plus-circle").addClass("fa-minus-circle");
+			});
+			$('#panel1').on('hidden.bs.collapse', function () {
+			   $("#panel1 #bookmark1 .fa").removeClass("fa-minus-circle").addClass("fa-plus-circle");
+			});
+			// Resulting panel2 button
+			$('#panel2').on('shown.bs.collapse', function () {
+			   $("#panel2 #bookmark2 .fa").removeClass("fa-plus-circle").addClass("fa-minus-circle");
+			});
+			$('#panel2').on('hidden.bs.collapse', function () {
+			   $("#panel2 #bookmark2 .fa").removeClass("fa-minus-circle").addClass("fa-plus-circle");
+			});
+			// Resulting panel3 button
+			$('#panel3').on('shown.bs.collapse', function () {
+			   $("#panel3 #bookmark3 .fa").removeClass("fa-plus-circle").addClass("fa-minus-circle");
+			});
+			$('#panel3').on('hidden.bs.collapse', function () {
+			   $("#panel3 #bookmark3 .fa").removeClass("fa-minus-circle").addClass("fa-plus-circle");
+			});
+			// Resulting panel4 button
+			$('#panel4').on('shown.bs.collapse', function () {
+			   $("#panel4 #bookmark4 .fa").removeClass("fa-plus-circle").addClass("fa-minus-circle");
+			});
+			$('#panel4').on('hidden.bs.collapse', function () {
+			   $("#panel4 #bookmark4 .fa").removeClass("fa-minus-circle").addClass("fa-plus-circle");
+			});
+			// Resulting panel5 button
+			$('#panel5').on('shown.bs.collapse', function () {
+			   $("#panel5 #bookmark5 .fa").removeClass("fa-plus-circle").addClass("fa-minus-circle");
+			});
+			$('#panel5').on('hidden.bs.collapse', function () {
+			   $("#panel5 #bookmark5 .fa").removeClass("fa-minus-circle").addClass("fa-plus-circle");
+			});
+			// Resulting panel6 button
+			$('#panel6').on('shown.bs.collapse', function () {
+			   $("#panel6 #bookmark6 .fa").removeClass("fa-plus-circle").addClass("fa-minus-circle");
+			});
+			$('#panel6').on('hidden.bs.collapse', function () {
+			   $("#panel6 #bookmark6 .fa").removeClass("fa-minus-circle").addClass("fa-plus-circle");
+			});
+			
+		</script>
+		
+		<!-- http://badge.dimensions.ai/#build -->
+		<script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
+		
+		<!-- JS for typeahead -->
+		<script type="text/javascript" src="/dep/typeahead/typeahead.bundle.min.js" ></script>
+
+		<!-- JS for bootstrap-toggle -->
+		<script type="text/javascript" src="/dep/bootstraptoggle/bootstrap-toggle.min.js" ></script>	
+
+		<!-- JS for bootstrap-select -->
+		<script type="text/javascript" src="/dep/bootstrapselect/bootstrap-select.min.js" ></script>
+		<!--
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js" ></script>
+		-->
+
+		<!-- JS for newWin -->
+		<script type="text/javascript">
+			function newWin(url, name, width, height) { 
+				var left = (screen.width/2)-(width/2);
+				var top = (screen.height/2)-(height/2); 
+				window.open(url,name,'scrollbars=yes,resizable=yes,fullscreen=yes, width=' + width + ', height='+height+', top='+top+', left='+left);
+			}
+		</script>
+
+		<!-- JS for tabber -->
+		<script type="text/javascript" src="/dep/tabber/tabber.js"></script>
+		<script type="text/javascript">
+		/* Optional: Temporarily hide the "tabber" class so it does not "flash"
+		   on the page as plain HTML. After tabber runs, the class is changed
+		   to "tabberlive" and it will appear.
+		*/
+			document.write('<style type="text/css">.tabber{display:none;}<\/style>');
+			var tabberOptions = {
+	
+			  /* Optional: instead of letting tabber run during the onload event,
+				 we'll start it up manually. This can be useful because the onload
+				 even runs after all the images have finished loading, and we can
+				 run tabber at the bottom of our page to start it up faster. See the
+				 bottom of this page for more info. Note: this variable must be set
+				 BEFORE you include tabber.js.
+			  */
+			  'manualStartup':true,
+	
+			  /* Optional: code to run after each tabber object has initialized */
+	
+			  'onLoad': function(argsObj) {
+				/* Display an alert only after tab2 */
+				if (argsObj.tabber.id == 'tab2') {
+				  alert('Finished loading tab2!');
+				}
+			  },
+	
+			  /* Optional: code to run when the user clicks a tab. If this
+				 function returns boolean false then the tab will not be changed
+				 (the click is canceled). If you do not return a value or return
+				 something that is not boolean false, */
+	
+			  'onClick': function(argsObj) {
+	
+				var t = argsObj.tabber; /* Tabber object */
+				var id = t.id; /* ID of the main tabber DIV */
+				var i = argsObj.index; /* Which tab was clicked (0 is the first tab) */
+				var e = argsObj.event; /* Event object */
+	
+				if (id == 'tab2') {
+				  return confirm('Swtich to '+t.tabs[i].headingText+'?\nEvent type: '+e.type);
+				}
+			  },
+	
+			  /* Optional: set an ID for each tab navigation link */
+			  'addLinkId': true
+	
+			};
+		</script>
+		
+
+		<%= content_for 'scripts' %>
+		
+	<!-- end body -->
+	</body>
+	
+<!-- end html -->
+</html>

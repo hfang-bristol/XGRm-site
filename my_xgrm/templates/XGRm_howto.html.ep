@@ -1,0 +1,144 @@
+% layout 'default', tab => '/XGRm/howto';
+% title 'XGRm - Providing the howto';
+
+% content_for css => begin
+	
+% end
+
+
+% content_for scripts => begin
+
+% end
+
+
+<div class="jumbotron0">
+
+	<div class="text-center">
+		<h3><i class="fa fa-street-view fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;HOWTO</h3>
+	</div>
+    
+</div>
+
+<hr>
+
+<!-- results -->
+<div id="results-container" class="container collapse in">
+	
+	<div class="panel-group" id="accordion">
+		
+	   <!-- panel 1 -->
+	   <div class="panel panel-default" id="panel1">
+		  <div class="panel-heading">
+			 <h4 class="panel-title" id="bookmark1">
+				<a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+				   <i class="fa fa-minus-circle"></i><strong>&nbsp;&nbsp;ABOUT</strong></a>
+				</a>
+			 </h4>
+		  </div>
+		  <div id="collapse1" class="panel-collapse collapse in">
+			 <div class = "panel-body">
+				
+				<fieldset>
+				<h5 class="about_title"><i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;We are excited to introduce <strong>XGR-model</strong> (<strong>XGRm</strong>), a model organism version of our highly popular XGR software. XGRm is a web server designed to provide real-time enrichment and subnetwork analyses for user-provided lists of genes or genomic regions, now focusing on the mouse organism. It achieves this by harnessing the power of ontologies, networks, and genomic datasets (including genomic proximity and enhancer-promoter links).</h5>
+				</fieldset>
+				
+				<br>
+				
+				<fieldset>
+				<h5 class="about_title"><i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;In genomics research, a significant challenge lies in bridging the gap between generated genomic summary data and meaningful knowledge discovery. We define genomic summary data as a list of genes (more generally, genomic regions), accompanied by their significance levels (e.g. p-values). Our commitment to addressing this challenge has led us to develop efficient and effective approaches and tools for deciphering genomic summary data. These tools and approaches encompass XGR, dnet, and Pi, which can be found in the section <strong>PUBLICATIONS</strong> below.</h5>
+				</fieldset>
+				
+				<br>
+				
+				<fieldset>
+				<h5 class="about_title"><i class="fa fa-minus fa-1x"></i>&nbsp;&nbsp;XGRm is a natural extension of our prior work, harnessing the growing wealth of ontologies and networks in the field. It boasts four distinct analysers, each tailored to interpret genomic summary data at the gene or genomic region level. Two enrichment analysers are to identify enriched ontology term, and two subnetwork analysers for identifying gene subnetworks. These analysers are described below:
+				<ul>
+				<li><a href="/XGRm/GElyser" target="GElyser"><i class="fa fa-meetup fa-1x fa-flip-horizontal"></i>&nbsp;GElyser</a>, Gene-centric Enrichment analyser that identifies enriched ontology terms from input gene list;
+				<li><a href="/XGRm/RElyser" target="RElyser"><i class="fa fa-meetup fa-1x fa-flip-horizontal"></i>&nbsp;RElyser</a>, Region-centric Enrichment analyser that identifies enriched ontology terms for genes linked from input genomic region list;
+				<li><a href="/XGRm/GSlyser" target="GSlyser"><i class="fa fa-meetup fa-1x fa-flip-horizontal"></i>&nbsp;GSlyser</a>, Gene-centric Subnetwork analyser that identifies a gene subnetwork based on input gene-level summary data;
+				<li><a href="/XGRm/RSlyser" target="RSlyser"><i class="fa fa-meetup fa-1x fa-flip-horizontal"></i>&nbsp;RSlyser</a>, Region-centric Subnetwork analyser that identifies a gene subnetwork based on genes linked from input genomic region-level summary data.
+				</ul>
+				</h5>
+				</fieldset>
+				
+				<br>
+				
+			 </div>
+		  </div>
+	   </div>
+
+	   <!-- panel 3 -->
+	   <div class="panel panel-default" id="panel3">
+		  <div class="panel-heading">
+			 <h4 class="panel-title" id="bookmark3">
+				<a id="barplot-button" data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+				   <i class="fa fa-plus-circle"></i><strong>&nbsp;&nbsp;FUNDING</strong></a>
+				</a>
+			 </h4>
+		  </div>
+		  <div id="collapse3" class="panel-collapse collapse">
+			<ul>
+	
+			<fieldset>
+				<h5 class="citation_title"><strong>National Natural Science Foundation of China (32170663)</strong></h5>
+				<p>2022 - 2025</p>
+			</fieldset>
+			
+			<br>
+			</ul>
+		  </div>
+	   </div>
+	  
+	   <!-- panel 4 -->
+	   <div class="panel panel-default" id="panel4">
+		  <div class="panel-heading">
+			 <h4 class="panel-title" id="bookmark4">
+				<a id="barplot-button" data-toggle="collapse" data-parent="#accordion" href="#collapse4">
+				   <i class="fa fa-plus-circle"></i><strong>&nbsp;&nbsp;PUBLICATIONS</strong></a>
+				</a>
+			 </h4>
+		  </div>
+		  <div id="collapse4" class="panel-collapse collapse">
+			<ul>
+	
+			<fieldset>
+			<h5 class="citation_title">XGR software for enhanced interpretation of genomic summary data, illustrated by application to immunological traits</h5>
+			<p><em>Genome Medicine</em> 2016</p>
+			<strong>DOI:</strong> <a href="http://dx.doi.org/10.1186/s13073-016-0384-y" target="10.1186/s13073-016-0384-y">10.1186/s13073-016-0384-y</a>
+			<span class="__dimensions_badge_embed__" data-doi="10.1186/s13073-016-0384-y" data-style="small_rectangle" data-legend="hover-right" data-hide-zero-citations="true"></span>
+			</fieldset>
+			<br>
+			
+			<fieldset>
+			<h5 class="citation_title">A genetics-led approach defines the drug target landscape of 30 immune-related traits</h5>
+			<p><em>Nature Genetics</em> 2019</p>
+			<strong>DOI:</strong> <a href="http://dx.doi.org/10.1038/s41588-019-0456-1" target="10.1038/s41588-019-0456-1">10.1038/s41588-019-0456-1</a>
+			<span class="__dimensions_badge_embed__" data-doi="10.1038/s41588-019-0456-1" data-style="small_rectangle" data-legend="hover-right" data-hide-zero-citations="true"></span>
+			</fieldset>
+			<br>
+			
+			<fieldset>
+			<h5 class="citation_title">Priority index: database of genetic targets in immune-mediated disease</h5>
+			<p><em>Nucleic Acids Research</em> 2022</p>
+			<strong>DOI:</strong> <a href="http://dx.doi.org/10.1093/nar/gkab994" target="10.1093/nar/gkab994">10.1093/nar/gkab994</a>
+			<span class="__dimensions_badge_embed__" data-doi="10.1093/nar/gkab994" data-style="small_rectangle" data-legend="hover-right" data-hide-zero-citations="true"></span>
+			</fieldset>
+			<br>
+			
+			<fieldset>
+			<h5 class="citation_title">The 'dnet' approach promotes emerging research on cancer patient survival</h5>
+			<p><em>Genome Medicine</em> 2014</p>
+			<strong>DOI:</strong> <a href="http://dx.doi.org/10.1186/s13073-014-0064-8" target="10.1186/s13073-014-0064-8">10.1186/s13073-014-0064-8</a>
+			<span class="__dimensions_badge_embed__" data-doi="10.1186/s13073-014-0064-8" data-style="small_rectangle" data-legend="hover-right" data-hide-zero-citations="true"></span>
+			</fieldset>
+			<br>
+			
+			</ul>
+		  </div>
+	   </div>
+	   
+	</div>
+
+</div>
+
+

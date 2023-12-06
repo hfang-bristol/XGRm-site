@@ -1,0 +1,106 @@
+---
+title: ""
+always_allow_html: yes
+output:
+  rmarkdown::html_document:
+        toc: false
+        toc_depth: 2
+        number_sections: false
+        theme: readable
+        highlight: default
+        toc_float: false
+        code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(results="asis")
+knitr::opts_chunk$set(cache=FALSE)
+knitr::opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(warning=FALSE)
+knitr::opts_chunk$set(message=FALSE)
+knitr::opts_chunk$set(fig_cap="yes")
+```
+
+```{r, eval=FALSE, echo=FALSE}
+cd ~/Sites/XGR/XGRm-site
+################################################
+R
+library(tidyverse)
+## rmarkdown::render + bookdown::html_document2
+rmarkdown::render("now.RMD_GElyser.Rmd", bookdown::html_document2(number_sections=F,theme=c("readable","united")[2], hightlight="default"), output_dir="/Users/hfang/Sites/XGR/XGRm-site/app/examples")
+
+q('no')
+################################################
+```
+
+
+# {.tabset .tabset-fade}
+
+
+## **Input: Gene Information**
+Completed on `r format(Sys.time(), "%a %b %d %X %Y")` (`r Sys.timezone()`), with the runtime of `r ls_rmd$runtime`.
+
+> **An interactive table** for user-input genes (n=`r nrow(ls_rmd$data_input)`, being processed). The table includes two columns: 1st column `Genes` for gene symbols, and 2nd column `Description` for gene description.
+
+```{r}
+
+data_input <-  ls_rmd$data_input
+
+data_input %>% DT::datatable(options=list(pageLength=5,searchHighlight=T,dom='Bfrtip',buttons=c('csv','copy'), dom='t',scrollX=T), style='default', caption="", rownames=FALSE, escape=F, extensions=c('Buttons'))
+```
+
+
+## **Output: Enriched Terms**
+
+> **An interactive table** that displays enriched ontology terms. Each enriched term (the columns `Ontology`, `Term ID`, and `Term Name`) has the enrichment Z-score (`Z-score`), the significance level of the enrichment (`FDR`), odds ratio (`Odds ratio`) and 95% confidence intervals (`95% CI`), the number (`Num`) and list (`Members`) of member genes that overlap with your input genes. The table is sorted by FDR ascendingly.
+
+```{r}
+filename <- ls_rmd$xlsx_enrichment
+
+message(sprintf("'%s' '%s' (%s) ...", filename, getwd(), as.character(Sys.time())), appendLF=TRUE)
+
+tb <- openxlsx::read.xlsx(filename) %>% as_tibble() %>% transmute(Ontology=namespace, `Term ID`=id, `Term Name`=name, `Z-score`=zscore, FDR=signif(adjp,digits=4), `Odds ratio`=or, `95% CI`=str_c('[',CIl,', ',CIu,']'), Num=nO, Members=overlap) %>% arrange(FDR)
+
+tb %>% DT::datatable(options=list(pageLength=1,searchHighlight=T,dom='Bfrtip',buttons=c('csv','copy'), dom='t',scrollX=T), style='default', caption="", rownames=FALSE, escape=F, extensions=c('Buttons'))
+```
+
+
+## **Output: Dotplot**
+
+> **A dotplot** of enriched ontology terms identified using Fisher's exact test. An editable pdf file is also available for download.
+
+```{r}
+hlink_pdf <- oAuxEmbed(ls_rmd$pdf_dotplot, link.text="DOWNLOAD .pdf")
+```
+<div class="text-right">`r hlink_pdf`</div>
+
+
+```{r dotplot, fig.cap="A dotplot of enriched ontology terms. The dots colored in red represent the terms with FDR < 0.05, indicating statistical significance. The top 5 significant terms (ordered by FDR ascendingly) are labelled for easier interpretation.", fig.width=5, fig.height=4, echo=FALSE, eval=T, fig.align="center",out.width="55%"}
+library(png)
+library(grid)
+filename <- ls_rmd$png_dotplot
+img <- readPNG(filename)
+grid.raster(img)
+```
+
+
+## **Output: Forest Plot**
+
+> **A forest plot** of enriched ontology terms identified using Fisher's exact test. An editable pdf file is also available for download.
+
+```{r}
+hlink_pdf <- oAuxEmbed(ls_rmd$pdf_forestplot, link.text="DOWNLOAD .pdf")
+```
+<div class="text-right">`r hlink_pdf`</div>
+
+
+```{r forest, fig.cap="Forest plot for enriched ontology terms (ordered by odds ratio descendingly).", fig.width=5, fig.height=4, echo=FALSE, eval=T, fig.align="center",out.width="55%"}
+library(png)
+library(grid)
+filename <- ls_rmd$png_forestplot
+img <- readPNG(filename)
+grid.raster(img)
+```
+
+
+
