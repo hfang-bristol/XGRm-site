@@ -2,11 +2,11 @@
 
 ## @ Overview
 
-> The [XGRm](http://www.xgrmod.com) web server offers real-time enrichment and subnetwork analyses for a user-input list of `genes`, `SNPs`, or `genomic regions`, through leveraging ontologies, networks, and many others (such as e/pQTL, promoter capture Hi-C, and enhancer-gene maps).
+> The [XGRm](http://www.xgrmod.com) web server offers real-time enrichment and subnetwork analyses for a user-input list of `genes` or `genomic regions`, through leveraging ontologies and networks.
 
-> The web server provides users with a more integrated and user-friendly experience, featuring: [ENRICHMENT ANALYSER (GENES) - EAG](http://www.xgrmod.com/XGRm/EAgene) identifying enriched ontology terms from input gene list; [ENRICHMENT ANALYSER (REGIONS) - EAR](http://www.xgrmod.com/XGRm/EAregion) identifying enriched ontology terms for genes linked from input genomic region list; [SUBNETWORK ANALYSER (GENES) - SAG](http://www.xgrmod.com/XGRm/SAgene) identifying a gene subnetwork based on input gene-level summary data; and [SUBNETWORK ANALYSER (REGIONS) - SAR](http://www.xgrmod.com/XGRm/SAregion) identifying a gene subnetwork based on genes linked from input genomic region-level summary data.
+> The web server provides users with a more integrated and user-friendly experience, featuring: [Gene-centric Enrichment analyser](http://www.xgrmod.com/XGRm/GElyser) performing gene-centric ontology enrichment analysis; [Region-centric Enrichment analyser](http://www.xgrmod.com/XGRm/RElyser) identifying enriched ontology terms for genes linked from input genomic region list; [Gene-centric Subnetwork analyser](http://www.xgrmod.com/XGRm/GSlyser) identifying a gene subnetwork based on input gene-level summary data; and [Region-centric Subnetwork analyser](http://www.xgrmod.com/XGRm/RSlyser) identifying a gene subnetwork based on genes linked from input genomic region-level summary data.
 
-> To learn how to use the XGRm web server, a user manual has been made available [here](http://www.xgrmod.com/XGRmodbooklet/index.html) with step-by-step instructions.
+> To learn how to use the XGRm web server, a user manual has been made available [here](http://www.xgrmod.com/XGRmbooklet/index.html) with step-by-step instructions.
 
 ## @ Development
 
